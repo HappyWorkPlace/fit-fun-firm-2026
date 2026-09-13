@@ -461,7 +461,7 @@ const TH_MON = ['มกราคม','กุมภาพันธ์','มีน
                 'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 
 let S = {
-  st:null, idToken:null,
+  st:null, idToken:null, uid:null, name:'',
   cfg:{pointMin:30,maxEntries:2,entryMin:10,entryMax:180,weekGoal:150,end:''},
   member:null, points:{balance:0,earned:0,spent:0},
   today:[], todayMin:0, todayPoint:false,
@@ -494,7 +494,10 @@ const store = {
 async function api(action, params = {}, method = 'GET') {
   const body = Object.assign({action}, params);
   if (S.st) body.st = S.st;
-  else if (S.idToken) body.idToken = S.idToken;
+  else {
+    if (S.idToken) body.idToken = S.idToken;
+    if (S.uid) { body.uid = S.uid; body.name = S.name || ''; }
+  }
 
   let res;
   if (method === 'POST') {
@@ -522,10 +525,18 @@ async function boot() {
   try {
     await liff.init({liffId: LIFF_ID});
     if (!liff.isLoggedIn()) { liff.login(); return; }
-    S.idToken = liff.getIDToken();
-    if (!S.idToken) {
+    try { S.idToken = liff.getIDToken(); } catch (e) { S.idToken = null; }
+
+    // เซิร์ฟเวอร์รับได้ทั้ง ID token และ user id ขึ้นกับค่า AUTH_MODE ในชีท Config
+    try {
+      const prof = await liff.getProfile();
+      S.uid = prof.userId;
+      S.name = prof.displayName || '';
+    } catch (e) { S.uid = null; }
+
+    if (!S.idToken && !S.uid) {
       return showError('ไม่ได้รับข้อมูลจาก LINE',
-        'กรุณาตรวจสอบว่า LINE Login channel เปิด scope openid ไว้แล้ว');
+        'กรุณาตรวจสอบว่า LINE Login channel เปิด scope profile และ openid ไว้แล้ว');
     }
   } catch (e) {
     return showError('เชื่อมต่อ LINE ไม่สำเร็จ', String(e.message || e));
