@@ -133,6 +133,56 @@ h1 .nm{font-size:22px;font-style:normal;letter-spacing:.04em;display:block;margi
 .pt-mark.now .pt-lb{color:var(--navy);font-weight:500}
 .pt-foot{display:flex;justify-content:space-between;gap:10px;margin-top:12px;font-size:11.5px;color:var(--dim)}
 .pt-foot b{color:var(--navy);font-weight:600}
+/* คลังของรางวัลในกรอบเดียวกับแต้ม */
+.pt-div{height:1px;background:var(--line);margin:16px -16px 0}
+.rw-head{display:flex;align-items:baseline;justify-content:space-between;margin:14px 0 10px}
+.rw-head b{font-family:'Barlow',sans-serif;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.2em;color:var(--blue)}
+.rw-head span{font-size:11.5px;color:var(--dim)}
+.rwrow{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
+  padding:2px 0 2px;scroll-behavior:smooth}
+.rwrow::-webkit-scrollbar{display:none}
+.rwc{flex:0 0 100%;scroll-snap-align:center;border:1px solid var(--line);border-radius:14px;
+  padding:14px;background:var(--wash);display:flex;gap:13px;align-items:center}
+.rwc.can{border-color:var(--line-2);background:var(--paper)}
+.rwc-ic{width:64px;height:64px;border-radius:14px;background:var(--paper);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;color:var(--navy);flex:0 0 auto}
+.rwc.can .rwc-ic{border-color:var(--navy)}
+.rwc-ic svg{width:38px;height:38px}
+.rwc-b{flex:1;min-width:0}
+.rwc-b h4{margin:0 0 2px;font-size:16px;font-weight:600;color:var(--navy);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rwc-b p{margin:0 0 9px;font-size:11.5px;color:var(--dim);line-height:1.4}
+.rwc-b p b{font-family:'IBM Plex Mono',monospace;font-weight:500;color:var(--red);font-size:13px}
+.rwc-go{width:100%;min-height:40px;border:0;border-radius:100px;background:var(--red);color:#fff;
+  font-family:'Anuphan',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:7px}
+.rwc-go:disabled{background:var(--paper);color:var(--dim);border:1px solid var(--line-2);cursor:not-allowed}
+.mini-spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;
+  border-radius:50%;animation:sp .7s linear infinite;flex:0 0 auto}
+.rwdots{display:flex;justify-content:center;gap:6px;margin-top:11px}
+.rwdots i{width:6px;height:6px;border-radius:50%;background:var(--line-2);transition:width .2s;cursor:pointer}
+.rwdots i.on{width:18px;border-radius:3px;background:var(--navy)}
+/* ปุ่มวันพัก */
+.rest-btn{display:flex;align-items:center;gap:12px;width:100%;border:1px solid var(--line-2);
+  background:var(--paper);border-radius:14px;padding:13px 15px;margin-bottom:10px;cursor:pointer;
+  font-family:'Anuphan',sans-serif;text-align:left;min-height:64px}
+.rest-btn:disabled{opacity:.55;cursor:not-allowed}
+.rest-btn .ic{width:42px;height:42px;border-radius:12px;background:var(--wash-2);flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;color:var(--navy)}
+.rest-btn .ic svg{width:24px;height:24px}
+.rest-btn .b{flex:1;min-width:0}
+.rest-btn .b b{display:block;font-size:15px;font-weight:600;color:var(--navy)}
+.rest-btn .b span{font-size:12px;color:var(--dim)}
+.rest-btn .tag{flex:0 0 auto;font-size:11px;font-weight:600;padding:5px 9px;border-radius:100px;
+  background:var(--ok-soft);color:var(--ok)}
+.rest-btn .tag.off{background:var(--wash-2);color:var(--dim)}
+.rest-done{display:flex;align-items:center;gap:12px;border:1px solid #cbe8db;background:var(--ok-soft);
+  border-radius:14px;padding:15px 16px}
+.rest-done .b{flex:1}
+.rest-done .b b{display:block;font-size:16px;font-weight:600;color:var(--ok)}
+.rest-done .b span{font-size:12px;color:#3d7a63}
+.cell.rest{background:var(--wash-2)}
+.cell.rest b{color:var(--navy);font-weight:500}
 
 /* ---------- summary ---------- */
 .sum{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:12px}
@@ -441,14 +491,6 @@ h1 .nm{font-size:22px;font-style:normal;letter-spacing:.04em;display:block;margi
   </div>
 </div>
 
-<div class="veil" id="rwVeil">
-  <div class="sheet">
-    <div class="sheet-h"><b>แลกของรางวัล</b><span id="rwSub">—</span></div>
-    <div class="sheet-body" id="rwBody"></div>
-    <div class="sheet-f"><button class="btn-g" id="rwClose">ปิด</button></div>
-  </div>
-</div>
-
 <div class="veil center" id="okVeil">
   <div class="modal">
     <h3>ยืนยันการบันทึก</h3>
@@ -493,7 +535,7 @@ const TH_MON = ['มกราคม','กุมภาพันธ์','มีน
 
 let S = {
   st:null, idToken:null, uid:null, name:'',
-  cfg:{pointMin:30,maxEntries:2,entryMin:10,entryMax:180,weekGoal:150,end:''},
+  cfg:{pointMin:30,maxEntries:2,entryMin:10,entryMax:180,weekGoal:150,end:'',maxPoints:100},
   member:null, points:{balance:0,earned:0,spent:0},
   today:[], todayMin:0, todayPoint:false,
   week:[], month:{}, monthCache:{}, ym:'',
@@ -501,7 +543,9 @@ let S = {
   act:[], actVer:'',
   fav:[], q:'', cur:0, pick:null, min:30,
   favDraft:[], fq:'', rdPick:null, br:'idle',
-  todayKey:'', busy:false, idem:null
+  todayKey:'', busy:false, idem:null,
+  rest:{isToday:false,thisWeek:0,perWeek:1,canEarn:true,days:[]},
+  restDays:[], rwIdx:0, rwTimer:null, rwBusy:null
 };
 
 const $ = s => document.querySelector(s);
@@ -614,6 +658,7 @@ function applyBoot(d) {
   S.rewards   = d.rewards || [];
   S.redeemed  = d.redeemed || [];
   S.advice    = d.advice || null;
+  if (d.rest) { S.rest = d.rest; S.restDays = d.rest.days || []; }
   if (S.todayPoint && S.br === 'idle') S.br = 'idle';
 }
 
@@ -882,6 +927,8 @@ function hl(name, q) {
 /* ==================================================================================
    ไอคอนของรางวัล — วาดเป็น SVG เส้นเอง ไม่ได้ใช้ไลบรารี
    ================================================================================== */
+const ICON_REST = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/></svg>`;
+
 const ICONS = {
  R10:`<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 5c1.6 2.2 2.7 3.6 2.7 4.9a2.7 2.7 0 1 1-5.4 0C17.3 8.6 18.4 7.2 20 5z"/><rect x="6.5" y="16" width="27" height="18" rx="4"/><path d="M13 16v-2a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v2"/><path d="M16 24h8"/></svg>`,
  R15:`<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6h10v14.5c0 1.7.8 2.7 2.2 3.6l3.4 2.2c2.6 1.7 2.2 5.6-.7 6.8-2 .8-4.3.4-6-1L15.3 27c-.9-.8-1.3-1.9-1.3-3.1V6z"/><path d="M14 11h10"/></svg>`,
@@ -951,6 +998,7 @@ function drawPoints() {
   const list = S.rewards.slice().sort((a,b) => a.cost - b.cost);
   const n = list.length || 1;
   const b = S.points.balance;
+  const maxP = S.cfg.maxPoints || 100;
 
   let idx = -1;
   list.forEach((r,i) => { if (b >= r.cost) idx = i; });
@@ -960,31 +1008,48 @@ function drawPoints() {
     const seg = (b - list[idx].cost) / (list[idx+1].cost - list[idx].cost);
     pct = (idx + Math.max(0, Math.min(1, seg))) / (n-1) * 100;
   }
-  const nx = list.filter(r => !S.redeemed.some(x => x.id === r.id && x.st !== 'EXPIRED'))
-                 .find(r => r.cost > b);
+  const nx = list.find(r => r.cost > b);
+  const affordable = list.filter(r => r.active && b >= r.cost).length;
 
   el.innerHTML = `
     <div class="pt">
       <div class="pt-top">
         <div class="pt-l">
           <div class="pt-k">แต้มสะสม</div>
-          <div class="pt-n">${b}<em> แต้ม</em></div>
+          <div class="pt-n">${b}<em> / ${maxP} แต้ม</em></div>
         </div>
-        <button class="pt-go" id="rwOpen">แลกของรางวัล</button>
       </div>
       <div class="pt-track" id="ptTrack">
         <div class="pt-line"><div class="pt-fill" style="width:${pct}%"></div></div>
-        ${list.map((r,i) => {
-          const got = S.redeemed.some(x => x.id === r.id && x.st !== 'EXPIRED');
-          return `<div class="pt-mark ${b>=r.cost?'on':''} ${i===idx?'now':''} ${got?'got':''}"
-                    style="left:calc(8px + (100% - 16px) * ${n>1?i/(n-1):0})">
-            <div class="pt-dot"></div><div class="pt-lb">${r.cost}</div></div>`;
-        }).join('')}
+        ${list.map((r,i) => `<div class="pt-mark ${b>=r.cost?'on':''} ${i===idx?'now':''}"
+              style="left:calc(8px + (100% - 16px) * ${n>1?i/(n-1):0})">
+            <div class="pt-dot"></div><div class="pt-lb">${r.cost}</div></div>`).join('')}
       </div>
       <div class="pt-foot">
-        <span>${nx ? `อีก <b>${nx.cost - b}</b> แต้มถึง${nx.n}` : 'แลกได้ครบทุกรายการแล้ว'}</span>
+        <span>${nx ? `อีก <b>${nx.cost - b}</b> แต้มถึง${nx.n}` : 'แลกได้ทุกรายการแล้ว'}</span>
         <span>${S.cfg.end ? 'สะสมถึง ' + thDate(S.cfg.end) : ''}</span>
       </div>
+
+      <div class="pt-div"></div>
+      <div class="rw-head">
+        <b>ของรางวัล</b>
+        <span>${affordable ? 'แลกได้ตอนนี้ ' + affordable + ' รายการ' : 'สะสมอีกนิดก็แลกได้แล้ว'}</span>
+      </div>
+      <div class="rwrow" id="rwRow">
+        ${list.map(r => {
+          const can = r.active && b >= r.cost;
+          const label = !r.active ? 'ของหมดแล้ว' : (b >= r.cost ? 'แลกเลย' : 'อีก ' + (r.cost - b) + ' แต้ม');
+          return `<div class="rwc ${can?'can':''}">
+            <div class="rwc-ic">${ICONS[r.icon] || ICONS[r.id] || ''}</div>
+            <div class="rwc-b">
+              <h4>${r.n}</h4>
+              <p><b>${r.cost}</b> แต้ม · ${r.d}${r.active ? ' · เหลือ ' + r.left + ' ชิ้น' : ''}</p>
+              <button class="rwc-go" data-r="${r.id}" ${can?'':'disabled'}>${label}</button>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="rwdots" id="rwDots">${list.map((r,i)=>`<i data-i="${i}" class="${i===S.rwIdx?'on':''}"></i>`).join('')}</div>
     </div>`;
 
   const bear = ptBear();
@@ -993,6 +1058,46 @@ function drawPoints() {
     $('#ptTrack').appendChild(bear);
     const p = bear.play(); if (p && p.catch) p.catch(()=>{});
   }
+  setupCarousel(list.length);
+}
+
+/**
+ * เลื่อนของรางวัลเองทุก 5 วินาที
+ * ถ้าผู้ใช้แตะหรือปัดเอง จะหยุดเลื่อนอัตโนมัติทันที เพราะการเลื่อนแทรกตอนคนกำลังอ่านคือสิ่งที่น่ารำคาญที่สุด
+ */
+function setupCarousel(count) {
+  const row = $('#rwRow'), dots = $('#rwDots');
+  if (!row || count < 2) return;
+  clearInterval(S.rwTimer);
+
+  const width = () => row.firstElementChild ? row.firstElementChild.offsetWidth + 10 : row.clientWidth;
+  let manual = false;
+
+  const goto = i => { S.rwIdx = (i + count) % count; row.scrollTo({left: S.rwIdx * width(), behavior:'smooth'}); };
+
+  if (S.rwIdx) row.scrollLeft = S.rwIdx * width();
+
+  row.addEventListener('scroll', () => {
+    const i = Math.round(row.scrollLeft / Math.max(1, width()));
+    if (i !== S.rwIdx) {
+      S.rwIdx = i;
+      [...dots.children].forEach((d,j) => d.classList.toggle('on', j === i));
+    }
+  }, {passive:true});
+
+  ['pointerdown','touchstart','wheel'].forEach(ev =>
+    row.addEventListener(ev, () => { manual = true; clearInterval(S.rwTimer); }, {passive:true}));
+
+  dots.addEventListener('click', e => {
+    const d = e.target.closest('i');
+    if (!d) return;
+    manual = true; clearInterval(S.rwTimer); goto(Number(d.dataset.i));
+  });
+
+  S.rwTimer = setInterval(() => {
+    if (manual || document.hidden || $('#app').hidden) return;
+    goto(S.rwIdx + 1);
+  }, 5000);
 }
 
 function drawWeek() {
@@ -1022,16 +1127,20 @@ function drawMonth() {
   const data = S.monthCache[ym] || {};
   const days = new Date(y, m+1, 0).getDate();
   const lead = new Date(y, m, 1).getDay();
-  let tot = 0, cnt = 0, best = 0, topDay = null;
+  const rest = (ym === S.todayKey.substring(0,7)) ? S.restDays : (S.restCache && S.restCache[ym] || []);
+  let tot = 0, cnt = 0, best = 0, topDay = null, restCnt = 0;
   const cells = [];
   for (let i = 0; i < lead; i++) cells.push('<div class="cell pad"></div>');
   for (let d = 1; d <= days; d++) {
     const k = ym + '-' + String(d).padStart(2,'0');
     const mins = Number(data[k] || 0);
+    const isRest = rest.indexOf(k) >= 0;
     const future = k > S.todayKey;
     if (mins > 0) { tot += mins; cnt++; if (mins > best) { best = mins; topDay = d; } }
-    cells.push(`<div class="cell ${mins ? (mins>=60?'hi':'has') : (future?'future':'')} ${k===S.todayKey?'today':''}">
-      <b>${d}</b><u>${mins||''}</u></div>`);
+    if (isRest) restCnt++;
+    const cls = isRest ? 'rest' : (mins ? (mins>=60?'hi':'has') : (future?'future':''));
+    cells.push(`<div class="cell ${cls} ${k===S.todayKey?'today':''}">
+      <b>${d}</b><u>${isRest ? 'พัก' : (mins||'')}</u></div>`);
   }
   const isCur = ym === S.todayKey.substring(0,7);
   $('#sumBody').innerHTML = `
@@ -1044,15 +1153,16 @@ function drawMonth() {
     <div class="legend">
       <span><i style="background:var(--ok-soft)"></i>มีบันทึก</span>
       <span><i style="background:var(--ok)"></i>60 นาทีขึ้นไป</span>
+      <span><i style="background:var(--wash-2)"></i>วันพัก</span>
       <span><i style="background:transparent;border:1px solid var(--red)"></i>วันนี้</span>
     </div>
     <div class="stats">
       <div class="stat"><b>${tot}</b><span>นาทีรวม</span></div>
       <div class="stat"><b>${cnt}</b><span>วันที่ออก</span></div>
-      <div class="stat"><b>${cnt}</b><span>แต้มเดือนนี้</span></div>
+      <div class="stat"><b>${restCnt}</b><span>วันพัก</span></div>
     </div>
-    <div class="mo-line">${cnt
-      ? `เดือน${TH_MON[m]}ออกกำลังกาย ${cnt} วัน รวม ${tot} นาที ได้ ${cnt} แต้ม${topDay ? ` มากที่สุดคือวันที่ ${topDay} จำนวน ${best} นาที` : ''}`
+    <div class="mo-line">${cnt || restCnt
+      ? `เดือน${TH_MON[m]}ออกกำลังกาย ${cnt} วัน รวม ${tot} นาที${restCnt ? ' และพักร่างกาย ' + restCnt + ' วัน' : ''}${topDay ? ` มากที่สุดคือวันที่ ${topDay} จำนวน ${best} นาที` : ''}`
       : `เดือน${TH_MON[m]} ${y+543} ยังไม่มีบันทึก`}</div>`;
 }
 
@@ -1062,20 +1172,45 @@ function drawSum() {
   sumView === 'w' ? drawWeek() : drawMonth();
 }
 
+function restBlock() {
+  const r = S.rest;
+  if (r.isToday) {
+    return `<div class="rest-done">
+      <div class="ic" style="width:42px;height:42px;border-radius:12px;background:#fff;border:1px solid #cbe8db;display:flex;align-items:center;justify-content:center;color:var(--ok)">${ICON_REST}</div>
+      <div class="b"><b>วันนี้คือวันพักร่างกาย</b><span>${S.todayPoint ? 'ได้ 1 แต้มแล้ว' : 'สัปดาห์นี้ได้แต้มวันพักครบแล้ว'}</span></div>
+    </div>`;
+  }
+  if (S.today.length) return '';
+  const can = r.canEarn;
+  return `<button class="rest-btn" id="restGo">
+    <span class="ic">${ICON_REST}</span>
+    <span class="b"><b>วันนี้พักร่างกาย</b>
+      <span>${can ? 'สัปดาห์นี้ยังไม่ได้ใช้ ได้ 1 แต้ม' : 'สัปดาห์นี้ใช้ไปแล้ว บันทึกได้แต่ไม่ได้แต้ม'}</span></span>
+    <span class="tag ${can?'':'off'}">${can ? '+1 แต้ม' : 'ไม่ได้แต้ม'}</span>
+  </button>`;
+}
+
 function drawInput() {
   const sec = $('#inputSec');
   if (!sec) return;
+
+  if (S.rest.isToday) {
+    sec.innerHTML = `<div class="sec-head"><div class="sec-title">วันนี้</div></div>` + restBlock();
+    return;
+  }
   if (S.today.length >= S.cfg.maxEntries) {
     sec.innerHTML = `<div class="empty"><b>วันนี้บันทึกครบแล้ว</b>บันทึกได้วันละไม่เกิน ${S.cfg.maxEntries} ครั้ง พรุ่งนี้เริ่มใหม่ได้หลัง 04:00 น.</div>`;
     return;
   }
+
   sec.innerHTML = `
     <div class="sec-head">
-      <div class="sec-title">เลือกกิจกรรม</div>
+      <div class="sec-title">วันนี้ทำอะไร</div>
       <div class="hint">${S.today.length ? 'เหลืออีก ' + (S.cfg.maxEntries - S.today.length) + ' ครั้ง' : 'วันละไม่เกิน ' + S.cfg.maxEntries + ' ครั้ง'}</div>
     </div>
+    ${restBlock()}
     <div class="search">
-      <input id="q" type="search" autocomplete="off" value="${S.q}" placeholder="พิมพ์ชื่อกีฬา เช่น แบด วิ่ง โยคะ">
+      <input id="q" type="search" autocomplete="off" value="${S.q}" placeholder="หรือพิมพ์ชื่อกีฬา เช่น แบด วิ่ง โยคะ">
       <button class="clr ${S.q?'on':''}" id="clr" aria-label="ล้างคำค้น">×</button>
     </div>
     <div id="resSlot"></div>
@@ -1178,41 +1313,6 @@ function drawBar() {
 function render() {
   drawSplash(); drawHeader(); drawPoints(); drawSum();
   drawInput(); drawToday(); drawBr(); drawBar(); drawCut();
-}
-
-/* ==================================================================================
-   แลกของรางวัล
-   ================================================================================== */
-function drawRw() {
-  $('#rwSub').textContent = S.cfg.pickupNote || 'รับของที่ห้อง HRA';
-  const b = S.points.balance;
-  $('#rwBody').innerHTML =
-    `<div class="rw-bal"><span>แต้มคงเหลือ</span><b>${b}</b></div><div class="rwrow" id="rwRow">` +
-    S.rewards.map(r => {
-      const got = S.redeemed.find(x => x.id === r.id && x.st !== 'EXPIRED');
-      const can = !got && r.active && b >= r.cost;
-      const label = got ? `แลกแล้วเมื่อ ${thDate(got.at)}`
-                        : (!r.active ? 'ของหมดแล้ว'
-                        : (b >= r.cost ? `แลก ${r.cost} แต้ม` : `อีก ${r.cost - b} แต้ม`));
-      return `<div class="rwc ${got?'got':''}">
-        <div class="rwc-top">
-          <div class="rwc-ic">${ICONS[r.icon] || ICONS[r.id] || ''}</div>
-          <div class="rwc-p">${r.cost}<em>แต้ม</em></div>
-        </div>
-        <h4>${r.n}</h4>
-        <p>${r.d}${r.active && !got ? ' · เหลือ ' + r.left + ' ชิ้น' : ''}</p>
-        <button data-r="${r.id}" ${can?'':'disabled'}>${label}</button>
-      </div>`;
-    }).join('') +
-    `</div><div class="rwdots" id="rwDots">${S.rewards.map((r,i)=>`<i class="${i===0?'on':''}"></i>`).join('')}</div>
-     <div class="rw-note">แลกได้รายการละ 1 ครั้งตลอดโครงการ แต้มจะถูกหักทันทีที่กดยืนยัน<br>
-     ${S.cfg.pickupNote || 'รับของที่ห้อง HRA'} ภายใน 7 วันหลังแลก ไม่มารับตามกำหนดระบบจะคืนแต้มให้อัตโนมัติ</div>`;
-
-  const row = $('#rwRow'), dots = $('#rwDots');
-  if (row) row.addEventListener('scroll', () => {
-    const i = Math.round(row.scrollLeft / (row.scrollWidth / Math.max(1,S.rewards.length)));
-    [...dots.children].forEach((d,j) => d.classList.toggle('on', j === i));
-  }, {passive:true});
 }
 
 /* ==================================================================================
@@ -1406,6 +1506,8 @@ document.addEventListener('click', async e => {
     $('#sumBody').innerHTML = '<div class="empty">กำลังโหลด...</div>';
     const r = await api('month', {ym: S.ym});
     S.monthCache[S.ym] = (r.ok ? r.month : {}) || {};
+    S.restCache = S.restCache || {};
+    S.restCache[S.ym] = (r.ok ? r.restDays : []) || [];
     drawMonth();
     return;
   }
@@ -1433,6 +1535,27 @@ document.addEventListener('click', async e => {
   if (t.dataset.s) {
     S.min = Math.min(S.cfg.entryMax, Math.max(S.cfg.entryMin, S.min + Number(t.dataset.s)));
     drawPanel(); drawBar();
+    return;
+  }
+
+  if (t.id === 'restGo') {
+    t.disabled = true;
+    t.querySelector('.tag').textContent = 'กำลังบันทึก...';
+    try {
+      const d = await api('entry', {act:'REST', min:0, idem: uuid()}, 'POST');
+      if (!d.ok) { toast(d.message || d.code, true); return; }
+      S.today = d.todayEntries || [];
+      S.todayMin = 0;
+      S.todayPoint = !!d.todayPoint;
+      S.points = d.points || S.points;
+      S.week = d.week || S.week;
+      if (d.rest) { S.rest = d.rest; S.restDays = d.rest.days || []; }
+      if (d.month) S.monthCache[S.todayKey.substring(0,7)] = d.month;
+      render();
+      toast(d.message || 'บันทึกวันพักแล้ว');
+    } catch (err) {
+      toast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง', true);
+    } finally { drawInput(); }
     return;
   }
 
@@ -1478,8 +1601,6 @@ document.addEventListener('click', async e => {
   }
 
   /* ---- แลกของ ---- */
-  if (t.id === 'rwOpen')  { drawRw(); $('#rwVeil').classList.add('on'); return; }
-  if (t.id === 'rwClose') { $('#rwVeil').classList.remove('on'); return; }
   if (t.dataset.r && !t.disabled) {
     const r = S.rewards.find(x => x.id === t.dataset.r);
     S.rdPick = r.id;
@@ -1490,20 +1611,34 @@ document.addEventListener('click', async e => {
   }
   if (t.id === 'rdNo') { $('#rdVeil').classList.remove('on'); S.rdPick = null; return; }
   if (t.id === 'rdYes') {
+    const rid = S.rdPick;
     $('#rdVeil').classList.remove('on');
-    t.disabled = true;
+
+    // สปินเนอร์บนปุ่มของรางวัลใบนั้นโดยตรง คนจะได้รู้ว่ากำลังทำงานอยู่
+    const card = document.querySelector('.rwc-go[data-r="' + rid + '"]');
+    let old = '';
+    if (card) {
+      old = card.innerHTML;
+      card.disabled = true;
+      card.innerHTML = '<span class="mini-spin"></span> กำลังแลก...';
+    }
     try {
-      const d = await api('redeem', {reward: S.rdPick}, 'POST');
-      if (!d.ok) { toast(d.message || d.code, true); return; }
+      const d = await api('redeem', {reward: rid}, 'POST');
+      if (!d.ok) {
+        toast(d.message || d.code, true);
+        if (card) { card.innerHTML = old; card.disabled = false; }
+        return;
+      }
       S.points = d.points || S.points;
       S.redeemed = d.redeemed || S.redeemed;
       S.rewards = d.rewards || S.rewards;
-      render(); drawRw();
-      toast(`แลกแล้ว มารับได้ถึง ${thDate(d.expireAt)}`);
+      render();
+      toast(`แลกสำเร็จ มารับได้ถึง ${thDate(d.expireAt)}`);
     } catch (err) {
       toast('แลกไม่สำเร็จ ลองใหม่อีกครั้ง', true);
+      if (card) { card.innerHTML = old; card.disabled = false; }
     } finally {
-      t.disabled = false; S.rdPick = null;
+      S.rdPick = null;
     }
     return;
   }
