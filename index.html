@@ -42,6 +42,7 @@ h1 .nm{font-size:22px;font-style:normal;letter-spacing:.04em;display:block;margi
 @keyframes sp{to{transform:rotate(360deg)}}
 .center-page h2{font-size:17px;font-weight:600;color:var(--navy);margin:0 0 6px}
 .center-page p{font-size:13.5px;color:var(--dim);margin:0;max-width:300px;line-height:1.5}
+.diag{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--line-2);margin-top:18px;line-height:1.6}
 .center-page .btn{margin-top:20px;min-height:48px;padding:0 26px;border:0;border-radius:12px;
   background:var(--red);color:#fff;font-family:'Anuphan',sans-serif;font-size:15px;font-weight:600;cursor:pointer}
 .reg{width:100%;max-width:360px;text-align:left;margin-top:22px}
@@ -331,11 +332,21 @@ h1 .nm{font-size:22px;font-style:normal;letter-spacing:.04em;display:block;margi
   <p id="loadMsg">กำลังตรวจสอบข้อมูลกับ LINE</p>
 </div>
 
+<!-- ============ ต้องเข้าสู่ระบบ LINE ============ -->
+<div class="center-page" id="loginPage" hidden>
+  <p class="kicker">HAPPY WORKPLACE 2026</p>
+  <h1 style="margin:8px 0 6px"><span class="nm">MinebeaMitsumi</span><span style="color:var(--orange)">FIT</span> <span style="color:var(--red)">FUN</span> <span style="color:var(--orange)">FIRM</span></h1>
+  <p style="max-width:300px;margin:6px 0 0">เข้าสู่ระบบด้วยบัญชี LINE เพื่อเริ่มใช้งาน ระบบขอแค่ชื่อและรูปโปรไฟล์ ไม่เห็นข้อความในแชทของคุณ</p>
+  <button class="btn" id="lineLogin">เข้าสู่ระบบด้วย LINE</button>
+  <p class="diag" id="loginDiag"></p>
+</div>
+
 <!-- ============ ผิดพลาด ============ -->
 <div class="center-page" id="errPage" hidden>
   <h2 id="errTitle">เปิดแอพไม่สำเร็จ</h2>
   <p id="errMsg"></p>
   <button class="btn" id="errRetry">ลองใหม่</button>
+  <p class="diag" id="errDiag"></p>
 </div>
 
 <!-- ============ ลงทะเบียน ============ -->
@@ -547,17 +558,22 @@ async function boot() {
     if (!liff.isLoggedIn()) { liff.login(); return; }
     try { S.idToken = liff.getIDToken(); } catch (e) { S.idToken = null; }
 
-    // เซิร์ฟเวอร์รับได้ทั้ง ID token และ user id ขึ้นกับค่า AUTH_MODE ในชีท Config
+    // หา user id จากสามทาง เอาทางไหนได้ก่อนก็ใช้ทางนั้น
     try {
       const prof = await liff.getProfile();
       S.uid = prof.userId;
       S.name = prof.displayName || '';
     } catch (e) { S.uid = null; }
 
-    if (!S.idToken && !S.uid) {
-      return showError('ไม่ได้รับข้อมูลจาก LINE',
-        'กรุณาตรวจสอบว่า LINE Login channel เปิด scope profile และ openid ไว้แล้ว');
+    if (!S.uid && S.idToken) {
+      const pl = jwtPayload(S.idToken);
+      if (pl && pl.sub) { S.uid = pl.sub; S.name = S.name || pl.name || ''; }
     }
+    if (!S.uid) {
+      try { const ctx = liff.getContext(); if (ctx && ctx.userId) S.uid = ctx.userId; } catch (e) {}
+    }
+
+    if (!S.idToken && !S.uid) return showLogin();
   } catch (e) {
     return showError('เชื่อมต่อ LINE ไม่สำเร็จ', String(e.message || e));
   }
@@ -565,7 +581,10 @@ async function boot() {
   $('#loadMsg').textContent = 'กำลังโหลดข้อมูลของคุณ';
   try {
     const d = await api('bootstrap');
-    if (!d.ok) return showError('เข้าสู่ระบบไม่สำเร็จ', d.message || d.code);
+    if (!d.ok) {
+      if (d.code === 'NO_TOKEN' || d.code === 'AUTH_FAILED') return showLogin(d.message);
+      return showError('เข้าสู่ระบบไม่สำเร็จ', d.message || d.code);
+    }
 
     S.cfg = d.config || S.cfg;
     S.todayKey = d.today;
@@ -615,7 +634,7 @@ async function ensureActivity(ver) {
 }
 
 function showPage(id) {
-  ['loading','errPage','regPage','splash','app'].forEach(p => {
+  ['loading','loginPage','errPage','regPage','splash','app'].forEach(p => {
     const el = $('#' + p);
     if (el) el.hidden = (p !== id);
   });
@@ -628,7 +647,31 @@ function showPage(id) {
 function showError(title, msg) {
   $('#errTitle').textContent = title;
   $('#errMsg').textContent = msg || '';
+  $('#errDiag').textContent = diag();
   showPage('errPage');
+}
+
+function showLogin(msg) {
+  $('#loginDiag').textContent = diag();
+  showPage('loginPage');
+  if (msg) toast(msg, true);
+}
+
+/** ข้อมูลย่อไว้ดูเวลามีปัญหา ไม่ได้แสดงข้อมูลส่วนตัว */
+function diag() {
+  return 'liff ' + (window.liff && liff.isLoggedIn && liff.isLoggedIn() ? 'in' : 'out') +
+         ' · token ' + (S.idToken ? 'y' : 'n') +
+         ' · uid ' + (S.uid ? S.uid.substring(0,6) + '…' : 'n') +
+         ' · client ' + (window.liff && liff.getOS ? liff.getOS() : '?');
+}
+
+/** แกะ payload ของ JWT ออกมาอ่าน ใช้ตอน getProfile ไม่คืนค่า */
+function jwtPayload(t) {
+  try {
+    let s = String(t).split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+    while (s.length % 4) s += '=';
+    return JSON.parse(decodeURIComponent(escape(atob(s))));
+  } catch (e) { return null; }
 }
 
 /* ==================================================================================
@@ -1344,6 +1387,11 @@ document.addEventListener('click', async e => {
   if (!t) return;
 
   if (t.id === 'errRetry') { showPage('loading'); boot(); return; }
+  if (t.id === 'lineLogin') {
+    try { liff.login({redirectUri: location.href}); }
+    catch (e) { toast('เปิดหน้าเข้าสู่ระบบไม่ได้ กรุณาเปิดลิงก์นี้ในแอพ LINE', true); }
+    return;
+  }
   if (t.id === 'regGo')    { tryRegister(); return; }
   if (t.id === 'goApp')    { showPage('app'); return; }
   if (t.id === 'backHome') { drawSplash(); showPage('splash'); return; }
