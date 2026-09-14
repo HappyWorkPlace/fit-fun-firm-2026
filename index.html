@@ -53,6 +53,22 @@ h1 .nm{font-size:22px;font-style:normal;letter-spacing:.04em;display:block;margi
 .reg input:focus{border-color:var(--navy);outline:none}
 .reg .note{font-size:12px;color:var(--dim);line-height:1.5;margin-top:14px}
 .reg .btn{width:100%;margin-top:4px}
+.reg .btn:disabled{background:var(--wash-2);color:var(--dim);cursor:not-allowed}
+.boxes{display:flex;gap:6px;align-items:center;width:100%}
+.box{flex:1 1 0;min-width:0;height:56px;border:1px solid var(--line-2);border-radius:12px;
+  background:var(--paper);text-align:center;padding:0;
+  font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:500;color:var(--navy);
+  text-transform:uppercase;caret-color:var(--red);transition:border-color .12s,background .12s}
+.box:focus{border-color:var(--navy);outline:none;box-shadow:0 0 0 3px var(--wash-2)}
+.box.on{background:var(--wash);border-color:var(--line-2)}
+.box.bad{border-color:var(--red);background:var(--red-soft)}
+.sep{flex:0 0 auto;width:7px;text-align:center;color:var(--line-2);font-weight:700;font-size:15px}
+.fieldnote{font-size:11.5px;color:var(--dim);margin:7px 0 0;min-height:17px}
+.fieldnote.ok{color:var(--ok)}
+.fieldnote.bad{color:var(--red)}
+.reg label{display:flex;justify-content:space-between;align-items:baseline}
+.reg label em{font-style:normal;font-family:'Anuphan',sans-serif;font-weight:500;
+  font-size:11px;letter-spacing:0;text-transform:none;color:var(--dim)}
 
 /* ---------- splash ---------- */
 .splash{display:flex;flex-direction:column;min-height:100dvh;max-width:520px;margin:0 auto;padding:26px 18px calc(30px + env(safe-area-inset-bottom))}
@@ -326,15 +342,19 @@ h1 .nm{font-size:22px;font-style:normal;letter-spacing:.04em;display:block;margi
 <div class="center-page" id="regPage" hidden>
   <p class="kicker">HAPPY WORKPLACE 2026</p>
   <h1 style="margin:8px 0 6px"><span class="nm">MinebeaMitsumi</span><span style="color:var(--orange)">FIT</span> <span style="color:var(--red)">FUN</span> <span style="color:var(--orange)">FIRM</span></h1>
-  <p style="font-size:13.5px;color:var(--dim);margin:0">ลงทะเบียนเข้าร่วมกิจกรรม ทำครั้งเดียว</p>
+  <p style="font-size:13.5px;color:var(--dim);margin:0">เข้าสู่ระบบครั้งแรก ทำครั้งเดียวจบ</p>
 
   <div class="reg">
-    <label>รหัสพนักงาน</label>
-    <input id="regEmno" type="text" autocomplete="off" placeholder="เช่น LC046" inputmode="text">
-    <label>วันเดือนปีเกิด</label>
-    <input id="regBirth" type="date">
-    <button class="btn" id="regGo">ลงทะเบียน</button>
-    <div class="note">ระบบใช้วันเกิดเพื่อยืนยันว่าเป็นเจ้าของรหัสจริง ข้อมูลตรงกับทะเบียนพนักงานของ HRA
+    <label>รหัสพนักงาน <em id="cntEmno">0 / 5</em></label>
+    <div class="boxes" id="boxEmno"></div>
+    <p class="fieldnote" id="noteEmno">ตัวอักษรและตัวเลข 5 หลัก เช่น LC046</p>
+
+    <label style="margin-top:20px">วันที่เข้างาน <em id="cntDate">0 / 8</em></label>
+    <div class="boxes" id="boxDate"></div>
+    <p class="fieldnote" id="noteDate">ปี ค.ศ. 4 หลัก เดือน 2 หลัก วัน 2 หลัก</p>
+
+    <button class="btn" id="regGo" disabled style="margin-top:22px">กรอกให้ครบก่อน</button>
+    <div class="note">ระบบใช้วันที่เข้างานเพื่อยืนยันว่าเป็นเจ้าของรหัสจริง ข้อมูลตรงกับทะเบียนพนักงานของ HRA
       หากลงทะเบียนไม่ผ่านหรือเปลี่ยนเครื่องใหม่ กรุณาติดต่อห้อง HRA</div>
   </div>
 </div>
@@ -550,7 +570,7 @@ async function boot() {
     S.cfg = d.config || S.cfg;
     S.todayKey = d.today;
 
-    if (!d.registered) { showPage('regPage'); return; }
+    if (!d.registered) { showPage('regPage'); initRegister(); return; }
 
     applyBoot(d);
     await ensureActivity(d.activityVersion);
@@ -612,21 +632,161 @@ function showError(title, msg) {
 }
 
 /* ==================================================================================
-   ลงทะเบียน
+   ลงทะเบียน — ช่องแบบกล่องทีละตัว
+   ถ้ารหัสพนักงานในองค์กรไม่ได้ยาว 5 หลักทุกคน แก้ EMNO_LEN ตัวเดียวพอ
    ================================================================================== */
+const EMNO_LEN = 5;
+const TH_MON_S = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+let REG = {emno:'', date:''};
+
+/**
+ * สร้างช่องกรอกแบบกล่อง พิมพ์แล้วเด้งช่องถัดไปเอง ลบแล้วถอยกลับเอง วางทีเดียวเต็มได้
+ * groups ใช้แบ่งกลุ่มพร้อมขีดคั่น เช่น [4,2,2] = ปี เดือน วัน
+ */
+function setupBoxes(elId, opts) {
+  const el = document.getElementById(elId);
+  el.innerHTML = '';
+  const inputs = [];
+  const groups = opts.groups || [opts.len];
+  const ok = opts.numeric ? /[0-9]/ : /[A-Z0-9]/;
+
+  groups.forEach((g, gi) => {
+    if (gi) {
+      const s = document.createElement('span');
+      s.className = 'sep'; s.textContent = '·';
+      el.appendChild(s);
+    }
+    for (let i = 0; i < g; i++) {
+      const inp = document.createElement('input');
+      inp.className = 'box';
+      inp.type = 'text';
+      inp.maxLength = 2;                       // เผื่อ IME บางตัวส่งมาสองตัว
+      inp.inputMode = opts.numeric ? 'numeric' : 'text';
+      inp.autocomplete = 'off';
+      inp.autocapitalize = 'characters';
+      inp.spellcheck = false;
+      inp.setAttribute('aria-label', opts.label + ' หลักที่ ' + (inputs.length + 1));
+      el.appendChild(inp);
+      inputs.push(inp);
+    }
+  });
+
+  const value = () => inputs.map(x => x.value).join('');
+
+  function sync() {
+    inputs.forEach(x => x.classList.toggle('on', !!x.value));
+    opts.onChange(value());
+  }
+
+  function fillFrom(start, text) {
+    const chars = String(text).toUpperCase().split('').filter(c => ok.test(c));
+    let i = start;
+    chars.forEach(c => { if (i < inputs.length) inputs[i++].value = c; });
+    const next = Math.min(i, inputs.length - 1);
+    inputs[next].focus();
+    if (i >= inputs.length) opts.onFull && opts.onFull();
+    sync();
+  }
+
+  inputs.forEach((inp, i) => {
+    inp.addEventListener('input', () => {
+      const raw = inp.value.toUpperCase();
+      const c = raw.slice(-1);
+      if (!ok.test(c)) { inp.value = raw.length > 1 ? raw.charAt(0) : ''; sync(); return; }
+      inp.value = c;
+      if (i < inputs.length - 1) inputs[i+1].focus();
+      else opts.onFull && opts.onFull();
+      sync();
+    });
+
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Backspace') {
+        if (!inp.value && i > 0) { e.preventDefault(); inputs[i-1].value = ''; inputs[i-1].focus(); sync(); }
+      } else if (e.key === 'ArrowLeft' && i > 0) { e.preventDefault(); inputs[i-1].focus(); }
+      else if (e.key === 'ArrowRight' && i < inputs.length - 1) { e.preventDefault(); inputs[i+1].focus(); }
+      else if (e.key === 'Enter') { e.preventDefault(); tryRegister(); }
+    });
+
+    inp.addEventListener('paste', e => {
+      e.preventDefault();
+      fillFrom(i, (e.clipboardData || window.clipboardData).getData('text'));
+    });
+
+    inp.addEventListener('focus', () => setTimeout(() => inp.select(), 0));
+  });
+
+  return {inputs, value, clear(){ inputs.forEach(x => x.value=''); sync(); inputs[0].focus(); },
+          markBad(){ inputs.forEach(x => x.classList.add('bad'));
+                     setTimeout(() => inputs.forEach(x => x.classList.remove('bad')), 1600); }};
+}
+
+let boxEmno = null, boxDate = null;
+
+function initRegister() {
+  if (boxEmno) return;
+  boxEmno = setupBoxes('boxEmno', {
+    len: EMNO_LEN, label: 'รหัสพนักงาน',
+    onChange: v => { REG.emno = v; $('#cntEmno').textContent = v.length + ' / ' + EMNO_LEN; checkReg(); },
+    onFull: () => { boxDate.inputs[0].focus(); }
+  });
+  boxDate = setupBoxes('boxDate', {
+    len: 8, groups: [4,2,2], numeric: true, label: 'วันที่เข้างาน',
+    onChange: v => { REG.date = v; $('#cntDate').textContent = v.length + ' / 8'; checkReg(); },
+    onFull: () => { if (validDate(REG.date)) $('#regGo').focus(); }
+  });
+  setTimeout(() => boxEmno.inputs[0].focus(), 250);
+}
+
+function validDate(v) {
+  if (!/^\d{8}$/.test(v)) return null;
+  const y = +v.substring(0,4), m = +v.substring(4,6), d = +v.substring(6,8);
+  if (y < 1950 || y > 2100 || m < 1 || m > 12 || d < 1 || d > 31) return null;
+  const dt = new Date(y, m-1, d);
+  if (dt.getFullYear() !== y || dt.getMonth() !== m-1 || dt.getDate() !== d) return null;
+  return {y, m, d, iso: v.substring(0,4) + '-' + v.substring(4,6) + '-' + v.substring(6,8)};
+}
+
+function checkReg() {
+  const nD = $('#noteDate'), btn = $('#regGo');
+  const emnoOk = REG.emno.length === EMNO_LEN;
+
+  if (REG.date.length < 8) {
+    nD.textContent = 'ปี ค.ศ. 4 หลัก เดือน 2 หลัก วัน 2 หลัก';
+    nD.className = 'fieldnote';
+  } else {
+    const v = validDate(REG.date);
+    if (v) {
+      nD.textContent = 'วันที่ ' + v.d + ' ' + TH_MON_S[v.m-1] + ' ' + (v.y + 543);
+      nD.className = 'fieldnote ok';
+    } else {
+      nD.textContent = 'วันที่ไม่ถูกต้อง ลองตรวจอีกครั้ง';
+      nD.className = 'fieldnote bad';
+    }
+  }
+
+  const ready = emnoOk && !!validDate(REG.date);
+  btn.disabled = !ready;
+  btn.textContent = ready ? 'ลงทะเบียน'
+    : (!emnoOk ? 'กรอกรหัสพนักงานให้ครบ' : 'กรอกวันที่เข้างานให้ครบ');
+}
+
+function tryRegister() { if (!$('#regGo').disabled) doRegister(); }
+
 async function doRegister() {
-  const emno = $('#regEmno').value.trim();
-  const birth = $('#regBirth').value.trim();
-  if (!emno) { toast('กรุณากรอกรหัสพนักงาน', true); return; }
-  if (!birth) { toast('กรุณาเลือกวันเกิด', true); return; }
+  const v = validDate(REG.date);
+  if (REG.emno.length !== EMNO_LEN || !v) return;
 
   const btn = $('#regGo');
   btn.disabled = true; btn.textContent = 'กำลังตรวจสอบ...';
   try {
-    const d = await api('register', {emno, birth}, 'POST');
-    if (!d.ok) { toast(d.message || d.code, true); return; }
-    toast('ลงทะเบียนเรียบร้อย');
-    $('#loadTitle').textContent = 'ลงทะเบียนสำเร็จ';
+    const d = await api('register', {emno: REG.emno, birth: v.iso}, 'POST');
+    if (!d.ok) {
+      toast(d.message || d.code, true);
+      if (d.code === 'BIRTH_MISMATCH') boxDate.markBad();
+      else if (d.code === 'NOT_FOUND') boxEmno.markBad();
+      return;
+    }
+    $('#loadTitle').textContent = 'ยินดีต้อนรับ ' + (d.name || '');
     $('#loadMsg').textContent = 'กำลังโหลดข้อมูลของคุณ';
     showPage('loading');
     const b = await api('bootstrap');
@@ -642,7 +802,8 @@ async function doRegister() {
   } catch (e) {
     toast('เชื่อมต่อไม่สำเร็จ ลองใหม่อีกครั้ง', true);
   } finally {
-    btn.disabled = false; btn.textContent = 'ลงทะเบียน';
+    checkReg();
+    if (!$('#regGo').disabled) $('#regGo').textContent = 'ลงทะเบียน';
   }
 }
 
@@ -1170,10 +1331,6 @@ document.addEventListener('input', e => {
 });
 
 document.addEventListener('keydown', e => {
-  if (e.target.id === 'regEmno' || e.target.id === 'regBirth') {
-    if (e.key === 'Enter') { e.preventDefault(); doRegister(); }
-    return;
-  }
   if (e.target.id !== 'q') return;
   const r = search(S.q, 6);
   if (!r.length) return;
@@ -1187,7 +1344,7 @@ document.addEventListener('click', async e => {
   if (!t) return;
 
   if (t.id === 'errRetry') { showPage('loading'); boot(); return; }
-  if (t.id === 'regGo')    { doRegister(); return; }
+  if (t.id === 'regGo')    { tryRegister(); return; }
   if (t.id === 'goApp')    { showPage('app'); return; }
   if (t.id === 'backHome') { drawSplash(); showPage('splash'); return; }
 
