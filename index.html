@@ -343,11 +343,15 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:31;display:flex;
   background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);
   padding-bottom:env(safe-area-inset-bottom)}
-.tb{flex:1;min-height:58px;border:0;background:transparent;cursor:pointer;
+.tb{position:relative;flex:1;min-height:58px;border:0;background:transparent;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
   font-family:'Anuphan',sans-serif;font-size:10.5px;color:var(--dim)}
 .tb svg{width:22px;height:22px}
 .tb.on{color:var(--navy);font-weight:600}
+.tb.on::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:46px;height:3px;border-radius:0 0 3px 3px;background:var(--navy)}
+.tb.on::after{content:'';position:absolute;inset:3px 6px 6px;border-radius:12px;
+  background:var(--wash);z-index:-1}
 .tb .badge{position:absolute;transform:translate(14px,-14px);min-width:16px;height:16px;
   border-radius:100px;background:var(--red);color:#fff;font-family:'IBM Plex Mono',monospace;
   font-size:9.5px;line-height:16px;padding:0 4px}
@@ -593,7 +597,7 @@ let S = {
   cfg:{pointMin:30,maxEntries:2,entryMin:10,entryMax:180,weekGoal:150,end:'',maxPoints:100},
   member:null, points:{balance:0,earned:0,spent:0},
   today:[], todayMin:0, todayPoint:false, todayKey:'',
-  week:[], month:{}, monthCache:{}, restCache:{}, ym:'',
+  week:[], month:{}, monthCache:{}, restCache:{}, actsCache:{}, ym:'',
   rewards:[], redeemed:[], advice:null,
   rest:{isToday:false,thisWeek:0,perWeek:1,canEarn:true,days:[]}, restDays:[],
   act:[], actVer:'', fav:[],
@@ -697,6 +701,7 @@ function applyBoot(d) {
   S.redeemed  = d.redeemed || [];
   S.advice    = d.advice || null;
   if (d.rest) { S.rest = d.rest; S.restDays = d.rest.days || []; S.restCache[S.ym] = S.restDays; }
+  if (d.acts) S.actsCache[S.ym] = d.acts;
 }
 
 async function ensureActivity(ver) {
@@ -1372,15 +1377,28 @@ function drawSum() {
   S.sumView === 'w' ? drawWeek() : drawMonth();
 }
 
-/** รายวันของเดือนที่กำลังดู เรียงจากใหม่ไปเก่า */
+/** รายวันของเดือนที่กำลังดู เรียงจากใหม่ไปเก่า พร้อมบอกว่าวันนั้นทำกิจกรรมอะไร */
+function actNames(codes) {
+  if (!codes) return '';
+  return String(codes).split(',').map(c => {
+    const t = c.trim();
+    if (!t) return '';
+    if (t === 'REST') return 'วันพักร่างกาย';
+    return A(t).n;
+  }).filter(Boolean).join(' · ');
+}
+
 function drawHistList() {
   const el = $('#histList');
   if (!el) return;
   const ym = S.ym;
   const data = S.monthCache[ym] || {};
   const rest = S.restCache[ym] || [];
-  const keys = [...new Set(Object.keys(data).concat(rest))]
-    .filter(k => k.substring(0,7) === ym && Number(data[k] || 0) > 0 || rest.indexOf(k) >= 0)
+  const acts = S.actsCache[ym] || {};
+
+  const keys = [...new Set(Object.keys(data).concat(rest).concat(Object.keys(acts)))]
+    .filter(k => k.substring(0,7) === ym)
+    .filter(k => Number(data[k] || 0) > 0 || rest.indexOf(k) >= 0)
     .sort().reverse();
 
   $('#histHint').textContent = TH_MON[Number(ym.substring(5,7))-1] + ' ' + (Number(ym.substring(0,4))+543);
@@ -1389,14 +1407,18 @@ function drawHistList() {
     el.innerHTML = `<div class="empty"><b>เดือนนี้ยังไม่มีบันทึก</b>เริ่มบันทึกวันนี้เพื่อเก็บแต้มแรก</div>`;
     return;
   }
+
   el.innerHTML = keys.map(k => {
     const mins = Number(data[k] || 0);
     const isRest = rest.indexOf(k) >= 0;
     const d = new Date(k + 'T12:00:00');
-    const label = d.getDate() + ' ' + TH_MON_S[d.getMonth()] + ' · ' + ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'][d.getDay()];
+    const dateLabel = d.getDate() + ' ' + TH_MON_S[d.getMonth()] + ' · ' +
+      ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'][d.getDay()];
+    const names = actNames(acts[k]) || (isRest ? 'วันพักร่างกาย' : 'ออกกำลังกาย');
     const point = isRest || mins >= S.cfg.pointMin;
     return `<div class="item">
-      <div class="item-b"><b>${isRest ? 'วันพักร่างกาย' : mins + ' นาที'}</b><span>${label}</span></div>
+      <div class="item-b"><b>${names}</b>
+        <span>${dateLabel}${isRest ? '' : ' · ' + mins + ' นาที'}</span></div>
       <div class="item-n">${point ? '+1' : '0'}<em> แต้ม</em></div>
     </div>`;
   }).join('');
@@ -1423,7 +1445,7 @@ function drawRwPage() {
       <div class="stat"><b>${S.points.spent}</b><span>แต้มที่ใช้ไป</span></div>
       <div class="stat"><b>${S.redeemed.length}</b><span>ครั้งที่แลก</span></div>
     </div>
-    ${pending ? `<div class="flash warn" style="margin-top:12px"><i>!</i><div>มี ${pending} รายการรอมารับ ${S.cfg.pickupNote || 'รับของที่ห้อง HRA'} ภายใน 7 วันหลังแลก ไม่มารับตามกำหนดระบบจะคืนแต้มให้อัตโนมัติ</div></div>` : ''}`;
+    `;
 
   $('#rwHint').textContent = S.redeemed.length ? S.redeemed.length + ' รายการ' : '';
 
@@ -1644,6 +1666,7 @@ document.addEventListener('click', async e => {
     const r = await api('month', {ym: S.ym});
     S.monthCache[S.ym] = (r.ok ? r.month : {}) || {};
     S.restCache[S.ym]  = (r.ok ? r.restDays : []) || [];
+    S.actsCache[S.ym]  = (r.ok ? r.acts : {}) || {};
     drawMonth(); drawHistList();
     return;
   }
@@ -1702,6 +1725,7 @@ document.addEventListener('click', async e => {
       S.week = d.week || S.week;
       if (d.rest) { S.rest = d.rest; S.restDays = d.rest.days || []; S.restCache[S.todayKey.substring(0,7)] = S.restDays; }
       if (d.month) S.monthCache[S.todayKey.substring(0,7)] = d.month;
+      if (d.acts) S.actsCache[S.todayKey.substring(0,7)] = d.acts;
       S.pick = null; S.q = ''; S.qLocked = false;
       render();
       toast(d.message || 'บันทึกวันพักแล้ว');
@@ -1739,6 +1763,7 @@ document.addEventListener('click', async e => {
       S.week = d.week || S.week;
       if (d.rest) { S.rest = d.rest; S.restDays = d.rest.days || []; }
       if (d.month) S.monthCache[S.todayKey.substring(0,7)] = d.month;
+      if (d.acts) S.actsCache[S.todayKey.substring(0,7)] = d.acts;
       if (d.gained) S.br = 'idle';
       S.pick = null; S.q = '';
       render();
