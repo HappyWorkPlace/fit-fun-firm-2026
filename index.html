@@ -202,6 +202,7 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
 .search input{width:100%;min-height:50px;border:1px solid var(--line-2);border-radius:12px;background:var(--paper);padding:12px 44px 12px 14px;font-family:'Anuphan',sans-serif;font-size:16px;color:var(--ink)}
 .search input::placeholder{color:var(--dim)}
 .search input:focus{border-color:var(--navy);outline:none}
+.search input.chosen{border-color:var(--navy);background:var(--wash);font-weight:600;color:var(--navy)}
 .clr{position:absolute;right:6px;top:6px;width:38px;height:38px;border:0;background:var(--wash-2);border-radius:10px;color:var(--dim);font-size:16px;cursor:pointer;display:none}
 .clr.on{display:block}
 .reslist{border:1px solid var(--line);border-radius:12px;margin-top:8px;overflow:hidden;animation:rise .18s ease-out}
@@ -549,6 +550,18 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
   </div>
 </div>
 
+<div class="veil center" id="restVeil">
+  <div class="modal">
+    <h3>ยืนยันวันพักร่างกาย</h3>
+    <p>เลือกแล้ววันนี้จะบันทึกออกกำลังกายไม่ได้อีก และยกเลิกไม่ได้</p>
+    <div class="confirm"><b>วันนี้พักร่างกาย</b><span id="restInfo">—</span></div>
+    <div class="modal-a">
+      <button class="btn-g" id="restNo">ยังไม่พัก</button>
+      <button class="btn-r" id="restYes">ยืนยันวันพัก</button>
+    </div>
+  </div>
+</div>
+
 <div class="veil center" id="rdVeil">
   <div class="modal">
     <h3>ยืนยันการแลก</h3>
@@ -584,7 +597,7 @@ let S = {
   rewards:[], redeemed:[], advice:null,
   rest:{isToday:false,thisWeek:0,perWeek:1,canEarn:true,days:[]}, restDays:[],
   act:[], actVer:'', fav:[],
-  q:'', cur:0, pick:null, min:30, favDraft:[], fq:'',
+  q:'', qLocked:false, cur:0, pick:null, min:30, favDraft:[], fq:'',
   rdPick:null, br:'idle', busy:false, idem:null,
   tab:'home', home:'bear', sumView:'w', rwIdx:0, rwTimer:null, rwManual:false
 };
@@ -1181,7 +1194,7 @@ function drawInput() {
       <div class="hint">${S.today.length ? 'เหลืออีก ' + (S.cfg.maxEntries - S.today.length) + ' ครั้ง' : 'วันละไม่เกิน ' + S.cfg.maxEntries + ' ครั้ง'}</div>
     </div>
     <div class="search">
-      <input id="q" type="search" autocomplete="off" value="${S.q}" placeholder="พิมพ์ชื่อกีฬา เช่น แบด วิ่ง โยคะ">
+      <input id="q" class="${S.qLocked?'chosen':''}" type="search" autocomplete="off" value="${S.q}" placeholder="พิมพ์ชื่อกีฬา เช่น แบด วิ่ง โยคะ">
       <button class="clr ${S.q?'on':''}" id="clr" aria-label="ล้างคำค้น">×</button>
     </div>
     <div id="resSlot"></div>
@@ -1200,7 +1213,7 @@ function drawInput() {
 function drawRes() {
   const rs = $('#resSlot'), fs = $('#favSlot');
   if (!rs) return;
-  if (!S.q) { rs.innerHTML = ''; if (fs) fs.style.display = ''; return; }
+  if (!S.q || S.qLocked) { rs.innerHTML = ''; if (fs) fs.style.display = ''; return; }
   if (fs) fs.style.display = 'none';
   const r = search(S.q, 7);
   if (!r.length) {
@@ -1458,10 +1471,12 @@ function thDate(k) {
 
 function uuid() { return 'x-' + Date.now() + '-' + Math.random().toString(36).substring(2,8); }
 
+/** เลือกกิจกรรมแล้วให้ชื่อไปแสดงในช่องค้นหา คนจะได้เห็นว่าเลือกอะไรอยู่ */
 function choose(c) {
   S.pick = c;
   S.min = Math.max(S.cfg.entryMin, 30);
-  S.q = '';
+  S.q = A(c).n;
+  S.qLocked = true;
   drawInput(); drawBar();
 }
 
@@ -1591,7 +1606,7 @@ function drawFav() {
    เหตุการณ์
    ================================================================================== */
 document.addEventListener('input', e => {
-  if (e.target.id === 'q') { S.q = e.target.value; S.cur = 0; S.pick = null; drawRes(); drawPanel(); drawBar(); }
+  if (e.target.id === 'q') { S.q = e.target.value; S.qLocked = false; S.cur = 0; S.pick = null; drawRes(); drawPanel(); drawBar(); }
   if (e.target.id === 'fq') { S.fq = e.target.value; drawFav(); }
 });
 
@@ -1633,7 +1648,7 @@ document.addEventListener('click', async e => {
     return;
   }
 
-  if (t.id === 'clr') { S.q = ''; S.pick = null; drawInput(); drawBar(); return; }
+  if (t.id === 'clr') { S.q = ''; S.qLocked = false; S.pick = null; drawInput(); drawBar(); return; }
   if (t.dataset.fav)  { openFav(); return; }
 
   if (t.dataset.t) {
@@ -1660,12 +1675,26 @@ document.addEventListener('click', async e => {
   }
 
   /* ---- วันพัก ---- */
+  /* ---- วันพัก: ถามยืนยันก่อนเสมอ เพราะเลือกแล้วเปลี่ยนใจไม่ได้ ---- */
   if (t.id === 'restGo') {
-    t.disabled = true;
-    t.innerHTML = '<span class="mini-spin" style="border-color:rgba(18,58,120,.25);border-top-color:var(--navy)"></span> กำลังบันทึก';
+    const d = new Date();
+    $('#restInfo').textContent =
+      d.getDate() + ' ' + TH_MON_S[d.getMonth()] + ' ' + (d.getFullYear() + 543) +
+      ' · ' + (S.rest.canEarn ? 'ได้ 1 แต้ม' : 'สัปดาห์นี้ได้แต้มวันพักครบแล้ว');
+    $('#restVeil').classList.add('on');
+    return;
+  }
+  if (t.id === 'restNo') { $('#restVeil').classList.remove('on'); return; }
+  if (t.id === 'restYes') {
+    $('#restVeil').classList.remove('on');
+    const chip = $('#restGo');
+    if (chip) {
+      chip.disabled = true;
+      chip.innerHTML = '<span class="mini-spin" style="border-color:rgba(18,58,120,.25);border-top-color:var(--navy)"></span> กำลังบันทึก';
+    }
     try {
       const d = await api('entry', {act:'REST', min:0, idem: uuid()}, 'POST');
-      if (!d.ok) { toast(d.message || d.code, true); return; }
+      if (!d.ok) { toast(d.message || d.code, true); drawInput(); return; }
       S.today = d.todayEntries || [];
       S.todayMin = 0;
       S.todayPoint = !!d.todayPoint;
@@ -1673,11 +1702,13 @@ document.addEventListener('click', async e => {
       S.week = d.week || S.week;
       if (d.rest) { S.rest = d.rest; S.restDays = d.rest.days || []; S.restCache[S.todayKey.substring(0,7)] = S.restDays; }
       if (d.month) S.monthCache[S.todayKey.substring(0,7)] = d.month;
+      S.pick = null; S.q = ''; S.qLocked = false;
       render();
       toast(d.message || 'บันทึกวันพักแล้ว');
     } catch (err) {
       toast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง', true);
-    } finally { drawInput(); }
+      drawInput();
+    }
     return;
   }
 
