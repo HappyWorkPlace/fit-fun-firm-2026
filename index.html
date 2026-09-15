@@ -78,6 +78,16 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
 .err{background:var(--red-soft);color:#8f1a20;border-radius:11px;padding:11px 13px;
   font-size:13px;margin-top:14px;line-height:1.45}
 .err.hide{display:none}
+.kv{display:flex;justify-content:space-between;align-items:baseline;gap:14px;
+  padding:11px 0;border-bottom:1px solid var(--line)}
+.kv:last-of-type{border-bottom:0}
+.kv span{flex:0 0 auto;font-size:12.5px;color:var(--dim)}
+.kv b{flex:1;text-align:right;font-weight:600;font-size:14.5px;color:var(--ink);line-height:1.35;
+  word-break:break-word}
+.kv b.mono{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:16px;color:var(--navy)}
+.confirm-box{background:var(--wash);border-radius:14px;padding:4px 14px;margin:4px 0 16px}
+.notme{width:100%;border:0;background:transparent;font-family:'Anuphan',sans-serif;font-size:13px;
+  font-weight:600;color:var(--blue);cursor:pointer;min-height:44px;text-decoration:underline;margin-top:6px}
 .card .note{font-size:11.5px;color:var(--dim);line-height:1.5;margin-top:16px;
   border-top:1px dashed var(--line);padding-top:13px;text-align:left;max-width:none}
 
@@ -428,7 +438,7 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
   <p class="kicker">HAPPY WORKPLACE 2026</p>
   <h1 style="margin:8px 0 0"><span class="nm">MinebeaMitsumi</span><span style="color:var(--orange)">FIT</span> <span style="color:var(--red)">FUN</span> <span style="color:var(--orange)">FIRM</span></h1>
 
-  <div class="card">
+  <div class="card" id="stepForm">
     <h2>ยืนยันตัวตนก่อนเริ่ม</h2>
     <p class="lead">ใช้ข้อมูลตามทะเบียนพนักงาน เพื่อกันการลงทะเบียนแทนกัน ทำครั้งเดียวจบ</p>
 
@@ -450,6 +460,21 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
 
     <div class="note">ข้อมูลตรงกับทะเบียนพนักงานของ HRA หากลงทะเบียนไม่ผ่าน
       หรือเปลี่ยนโทรศัพท์เครื่องใหม่ กรุณาติดต่อห้อง HRA</div>
+  </div>
+
+  <div class="card" id="stepConfirm" hidden>
+    <h2>ใช่คุณหรือเปล่า</h2>
+    <p class="lead">ตรวจข้อมูลให้ตรงก่อนเข้าร่วม บัญชี LINE นี้จะผูกกับรหัสนี้ถาวร</p>
+    <div class="confirm-box">
+      <div class="kv"><span>รหัสพนักงาน</span><b class="mono" id="cvEmno">—</b></div>
+      <div class="kv"><span>ชื่อ</span><b id="cvName">—</b></div>
+      <div class="kv"><span>ฝ่าย</span><b id="cvDiv">—</b></div>
+      <div class="kv"><span>โรงงาน</span><b id="cvLoc">—</b></div>
+    </div>
+    <button class="btn" id="joinGo">เข้าร่วมกิจกรรม</button>
+    <button class="notme" id="notMe">ไม่ใช่ฉัน กลับไปแก้ข้อมูล</button>
+    <div class="err hide" id="joinErr"></div>
+    <div class="note">ถ้าข้อมูลไม่ตรงกับตัวคุณ อย่ากดเข้าร่วม กรุณาติดต่อห้อง HRA เพื่อตรวจสอบทะเบียนพนักงาน</div>
   </div>
 </div>
 
@@ -788,7 +813,7 @@ function switchTab(k) {
    รหัสพนักงานเป็นช่องเดียวเพราะความยาวไม่เท่ากันทุกคน
    วันเข้างานเป็นกล่องแยก 8 ตัว พิมพ์แล้วเด้งเอง ลบแล้วถอยเอง วางทีเดียวเต็มได้
    ================================================================================== */
-let REG = {emno:'', date:''};
+let REG = {emno:'', date:'', found:null};
 let boxDate = null;
 
 function setupOtp(elId, groups, onChange, onFull) {
@@ -869,6 +894,7 @@ function initRegister() {
     v => { REG.date = v; checkReg(); },
     () => { if (validDate(REG.date) && REG.emno.length >= 3) $('#regGo').focus(); });
 
+  showStep('form');
   setTimeout(() => emno.focus(), 250);
 }
 
@@ -915,19 +941,33 @@ function checkReg() {
     : (!emnoOk ? 'กรอกรหัสพนักงานก่อน' : 'กรอกวันเข้างานให้ครบ');
 }
 
-function tryRegister() { if (!$('#regGo').disabled) doRegister(); }
+function tryRegister() { if (!$('#regGo').disabled) doVerify(); }
 
-async function doRegister() {
+function regError(elId, msg) {
+  const e = $(elId);
+  if (!e) return;
+  if (!msg) { e.className = 'err hide'; e.textContent = ''; return; }
+  e.className = 'err'; e.textContent = msg;
+}
+
+function showStep(which) {
+  $('#stepForm').hidden = (which !== 'form');
+  $('#stepConfirm').hidden = (which !== 'confirm');
+  window.scrollTo(0,0);
+}
+
+/** ขั้นที่ 1 ตรวจข้อมูลกับทะเบียนพนักงาน ยังไม่ผูกบัญชี */
+async function doVerify() {
   const v = validDate(REG.date);
   if (REG.emno.length < 3 || !v) return;
 
   const btn = $('#regGo');
-  regError('');
+  regError('#loginErr', '');
   btn.disabled = true; btn.textContent = 'กำลังตรวจสอบ...';
   try {
-    const d = await api('register', {emno: REG.emno, birth: v.iso}, 'POST');
+    const d = await api('verify', {emno: REG.emno, birth: v.iso});
     if (!d.ok) {
-      regError(d.message || d.code);
+      regError('#loginErr', d.message || d.code);
       if (d.code === 'BIRTH_MISMATCH') boxDate.markBad();
       else if (d.code === 'NOT_FOUND') {
         const e = $('#fEmno');
@@ -936,7 +976,32 @@ async function doRegister() {
       }
       return;
     }
-    $('#loadTitle').textContent = 'ยินดีต้อนรับ' + (d.name ? ' ' + d.name.split(' ')[0] : '');
+    REG.found = d;
+    $('#cvEmno').textContent = d.emno || '—';
+    $('#cvName').textContent = d.name || '—';
+    $('#cvDiv').textContent  = d.div  || '—';
+    $('#cvLoc').textContent  = d.loc  || '—';
+    regError('#joinErr', '');
+    showStep('confirm');
+  } catch (e) {
+    regError('#loginErr', 'เชื่อมต่อไม่สำเร็จ ตรวจสัญญาณแล้วลองใหม่อีกครั้ง');
+  } finally {
+    checkReg();
+  }
+}
+
+/** ขั้นที่ 2 ผูกบัญชี LINE กับรหัสพนักงานจริง */
+async function doRegister() {
+  const v = validDate(REG.date);
+  if (!REG.found || !v) return;
+
+  const btn = $('#joinGo');
+  regError('#joinErr', '');
+  btn.disabled = true; btn.textContent = 'กำลังเข้าร่วม...';
+  try {
+    const d = await api('register', {emno: REG.emno, birth: v.iso}, 'POST');
+    if (!d.ok) { regError('#joinErr', d.message || d.code); return; }
+    $('#loadTitle').textContent = 'ยินดีต้อนรับ ' + firstName(d.name || REG.found.name);
     $('#loadMsg').textContent = 'กำลังโหลดข้อมูลของคุณ';
     showPage('loading');
     const b = await api('bootstrap');
@@ -946,10 +1011,18 @@ async function doRegister() {
       await enterApp(b);
     }
   } catch (e) {
-    regError('เชื่อมต่อไม่สำเร็จ ตรวจสัญญาณแล้วลองใหม่อีกครั้ง');
+    regError('#joinErr', 'เชื่อมต่อไม่สำเร็จ ตรวจสัญญาณแล้วลองใหม่อีกครั้ง');
   } finally {
-    checkReg();
+    btn.disabled = false; btn.textContent = 'เข้าร่วมกิจกรรม';
   }
+}
+
+/** ตัดคำนำหน้าออกก่อน ไม่งั้นจะได้ "ยินดีต้อนรับ MR." */
+function firstName(full) {
+  const skip = ['MR.','MR','MRS.','MRS','MISS','MS.','MS','นาย','นาง','นางสาว'];
+  const parts = String(full || '').trim().split(/\s+/).filter(Boolean);
+  while (parts.length > 1 && skip.indexOf(parts[0].toUpperCase()) >= 0) parts.shift();
+  return parts[0] || '';
 }
 
 /* ==================================================================================
@@ -1378,14 +1451,23 @@ function drawSum() {
 }
 
 /** รายวันของเดือนที่กำลังดู เรียงจากใหม่ไปเก่า พร้อมบอกว่าวันนั้นทำกิจกรรมอะไร */
+/**
+ * แปลงรหัสกิจกรรมเป็นข้อความที่อ่านแล้วเป็นประโยค
+ * กีฬาที่เป็นคำนามล้วนเติม "เล่น" นำหน้า ส่วนชื่อที่เป็นกริยาอยู่แล้วอย่าง วิ่ง โยคะ ทำสวน ปล่อยไว้
+ */
+const VERB_GROUPS = ['กีฬาแร็กเกต','กีฬาทีม'];
+
+function actLabel(code) {
+  const c = String(code).trim();
+  if (!c) return '';
+  if (c === 'REST') return 'วันพักร่างกาย';
+  const a = A(c);
+  return (VERB_GROUPS.indexOf(a.g) >= 0 ? 'เล่น' : '') + a.n;
+}
+
 function actNames(codes) {
   if (!codes) return '';
-  return String(codes).split(',').map(c => {
-    const t = c.trim();
-    if (!t) return '';
-    if (t === 'REST') return 'วันพักร่างกาย';
-    return A(t).n;
-  }).filter(Boolean).join(' · ');
+  return String(codes).split(',').map(actLabel).filter(Boolean).join(' · ');
 }
 
 function drawHistList() {
@@ -1414,7 +1496,7 @@ function drawHistList() {
     const d = new Date(k + 'T12:00:00');
     const dateLabel = d.getDate() + ' ' + TH_MON_S[d.getMonth()] + ' · ' +
       ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'][d.getDay()];
-    const names = actNames(acts[k]) || (isRest ? 'วันพักร่างกาย' : 'ออกกำลังกาย');
+    const names = actNames(acts[k]) || (isRest ? 'วันพักร่างกาย' : 'ไม่ได้บันทึกชื่อกิจกรรม');
     const point = isRest || mins >= S.cfg.pointMin;
     return `<div class="item">
       <div class="item-b"><b>${names}</b>
@@ -1651,7 +1733,9 @@ document.addEventListener('click', async e => {
     catch (err) { toast('เปิดหน้าเข้าสู่ระบบไม่ได้ กรุณาเปิดลิงก์นี้ในแอพ LINE', true); }
     return;
   }
-  if (t.id === 'regGo') { tryRegister(); return; }
+  if (t.id === 'regGo')  { tryRegister(); return; }
+  if (t.id === 'joinGo') { doRegister(); return; }
+  if (t.id === 'notMe')  { REG.found = null; showStep('form'); setTimeout(() => $('#fEmno').focus(), 120); return; }
   if (t.dataset.tab)    { switchTab(t.dataset.tab); return; }
   if (t.id === 'goInput')  { showHome('input'); return; }
   if (t.id === 'backBear') { showHome('bear'); return; }
