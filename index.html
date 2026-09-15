@@ -45,32 +45,42 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
 .diag{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--line-2);margin-top:18px;line-height:1.6}
 .center-page .btn{margin-top:20px;min-height:48px;padding:0 26px;border:0;border-radius:12px;
   background:var(--red);color:#fff;font-family:'Anuphan',sans-serif;font-size:15px;font-weight:600;cursor:pointer}
-.reg{width:100%;max-width:360px;text-align:left;margin-top:22px}
-.reg label{display:flex;justify-content:space-between;align-items:baseline;
-  font-family:'Barlow',sans-serif;font-weight:600;font-size:11px;text-transform:uppercase;
-  letter-spacing:.2em;color:var(--blue);margin:0 0 7px}
-.reg label em{font-style:normal;font-family:'Anuphan',sans-serif;font-weight:500;
-  font-size:11px;letter-spacing:0;text-transform:none;color:var(--dim)}
-.reg .note{font-size:12px;color:var(--dim);line-height:1.5;margin-top:14px}
-.reg .btn{width:100%;margin-top:4px}
-.reg .btn:disabled{background:var(--wash-2);color:var(--dim);cursor:not-allowed}
-.boxes{display:flex;gap:6px;align-items:center;width:100%}
-.box{flex:1 1 0;min-width:0;height:56px;border:1px solid var(--line-2);border-radius:12px;
+.card{width:100%;max-width:380px;text-align:left;background:var(--paper);border:1px solid var(--line);
+  border-radius:18px;padding:22px 20px;margin-top:22px;box-shadow:0 4px 18px rgba(18,58,120,.06)}
+.card h2{margin:0 0 6px;font-size:19px;font-weight:600;color:var(--navy)}
+.card .lead{font-size:13px;color:var(--dim);margin:0 0 20px;line-height:1.5;max-width:none}
+.field{margin-bottom:18px}
+.field label{display:flex;justify-content:space-between;align-items:baseline;
+  font-family:'Anuphan',sans-serif;font-weight:600;font-size:13px;
+  letter-spacing:0;color:var(--navy);margin:0 0 8px}
+.field label em{font-style:normal;font-weight:500;font-size:11.5px;color:var(--dim)}
+.input{width:100%;min-height:54px;border:1px solid var(--line-2);border-radius:12px;background:var(--paper);
+  padding:12px 15px;font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:500;color:var(--navy);
+  letter-spacing:.06em;text-transform:uppercase}
+.input::placeholder{font-family:'Anuphan',sans-serif;font-size:15px;letter-spacing:0;
+  text-transform:none;color:var(--line-2);font-weight:400}
+.input:focus{border-color:var(--navy);outline:none;box-shadow:0 0 0 3px var(--wash-2)}
+.input.bad{border-color:var(--red);background:var(--red-soft)}
+.otp{display:flex;gap:6px;align-items:center;width:100%}
+.otp input{flex:1 1 0;min-width:0;height:54px;border:1px solid var(--line-2);border-radius:12px;
   background:var(--paper);text-align:center;padding:0;
-  font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:500;color:var(--navy);
-  text-transform:uppercase;caret-color:var(--red);transition:border-color .12s,background .12s}
-.box:focus{border-color:var(--navy);outline:none;box-shadow:0 0 0 3px var(--wash-2)}
-.box.on{background:var(--wash)}
-.box.bad{border-color:var(--red);background:var(--red-soft)}
-.sep{flex:0 0 auto;width:7px;text-align:center;color:var(--line-2);font-weight:700;font-size:15px}
-.fieldnote{font-size:11.5px;color:var(--dim);margin:7px 0 0;min-height:17px}
-.fieldnote.ok{color:var(--ok)}
-.fieldnote.bad{color:var(--red)}
+  font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:500;color:var(--navy);
+  caret-color:var(--red);transition:border-color .12s,background .12s}
+.otp input:focus{border-color:var(--navy);outline:none;box-shadow:0 0 0 3px var(--wash-2)}
+.otp input.on{background:var(--wash)}
+.otp input.bad{border-color:var(--red);background:var(--red-soft)}
+.otp .sep{flex:0 0 auto;width:9px;text-align:center;color:var(--line-2);font-weight:700;font-size:15px}
+.hint{font-size:11.5px;color:var(--dim);margin:8px 0 0;min-height:17px;text-align:left}
+.hint.ok{color:var(--ok)}
+.hint.bad{color:var(--red)}
+.card .btn{width:100%;margin-top:4px}
+.card .btn:disabled{background:var(--wash-2);color:var(--dim);cursor:not-allowed}
+.err{background:var(--red-soft);color:#8f1a20;border-radius:11px;padding:11px 13px;
+  font-size:13px;margin-top:14px;line-height:1.45}
+.err.hide{display:none}
+.card .note{font-size:11.5px;color:var(--dim);line-height:1.5;margin-top:16px;
+  border-top:1px dashed var(--line);padding-top:13px;text-align:left;max-width:none}
 
-/* ---------- หัวหน้าจอ ---------- */
-.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
-.top .id{text-align:right;font-size:11.5px;color:var(--dim);line-height:1.35}
-.top .id b{display:block;font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--navy);font-weight:500}
 
 /* ---------- หมี ---------- */
 .bearwrap{display:flex;flex-direction:column;align-items:center;margin-top:14px}
@@ -105,23 +115,22 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
 .hero-n em{font-style:normal;font-size:14px;font-weight:600;color:rgba(255,255,255,.55)}
 .hero-sub{font-size:12px;color:rgba(255,255,255,.55);margin-top:5px}
 
-.htrack{position:relative;height:72px;margin-top:14px}
-.hbear{position:absolute;bottom:26px;width:40px;height:40px;border-radius:50%;overflow:hidden;
-  background:#fff;transform:translateX(-50%);transition:left .45s ease-out;pointer-events:none;
-  box-shadow:0 0 0 2px var(--deep),0 0 0 3px rgba(255,255,255,.35);z-index:2}
-.hbear video{width:150%;height:150%;object-fit:cover;margin:-25% 0 0 -25%;transform:scaleX(-1)}
-.hline{position:absolute;left:6px;right:6px;top:44px;height:3px;border-radius:2px;background:rgba(255,255,255,.2)}
-.hfill{position:absolute;left:0;top:0;height:100%;border-radius:2px;background:var(--gold);transition:width .45s ease-out}
-.hmark{position:absolute;top:39px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px}
-.hdot{width:13px;height:13px;border-radius:50%;background:rgba(255,255,255,.22);border:2px solid var(--deep);box-sizing:content-box}
-.hmark.on .hdot{background:var(--gold)}
-.hmark.now .hdot{box-shadow:0 0 0 4px rgba(240,162,74,.25)}
-.hlb{font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,.5);font-variant-numeric:tabular-nums}
-.hmark.on .hlb{color:rgba(255,255,255,.85)}
-.hmark.now .hlb{color:#fff;font-weight:500}
+/* รางวิ่งพื้นขาวในกรอบเข้ม เพื่อให้หมีที่พื้นหลังขาวกลืนไปกับราง ไม่ต้องครอบวงกลม */
+.htrack{position:relative;height:112px;margin-top:14px;background:#fff;border-radius:14px;overflow:hidden}
+.hbear{position:absolute;bottom:40px;width:46px;transform:translateX(-50%) scaleX(-1);
+  transition:left .45s ease-out;pointer-events:none;z-index:2;display:block}
+.hline{position:absolute;left:16px;right:16px;top:72px;height:4px;border-radius:2px;background:var(--wash-2)}
+.hfill{position:absolute;left:0;top:0;height:100%;border-radius:2px;background:var(--navy);transition:width .45s ease-out}
+.hmark{position:absolute;top:67px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px}
+.hdot{width:13px;height:13px;border-radius:50%;background:var(--wash-2);border:2px solid #fff;box-sizing:content-box}
+.hmark.on .hdot{background:var(--navy)}
+.hmark.now .hdot{box-shadow:0 0 0 4px var(--wash)}
+.hlb{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--line-2);font-variant-numeric:tabular-nums}
+.hmark.on .hlb{color:var(--dim)}
+.hmark.now .hlb{color:var(--navy);font-weight:600}
 
 .hslides{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
-  scroll-behavior:smooth;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12)}
+  scroll-behavior:smooth;margin-top:16px}
 .hslides::-webkit-scrollbar{display:none}
 .hs{flex:0 0 100%;scroll-snap-align:center;display:flex;gap:13px;align-items:center}
 .hs-ic{width:62px;height:62px;border-radius:16px;background:rgba(255,255,255,.1);flex:0 0 auto;
@@ -141,6 +150,29 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
 .hdots{display:flex;justify-content:center;gap:6px;margin-top:14px}
 .hdots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.28);transition:width .2s;cursor:pointer}
 .hdots i.on{width:18px;border-radius:3px;background:#fff}
+
+/* ---------- บัตรพนักงาน ---------- */
+.id-card{display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:14px;
+  padding:13px 16px;margin-top:14px}
+.id-code{font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:500;color:var(--navy);flex:0 0 auto}
+.id-div{width:1px;align-self:stretch;background:var(--line)}
+.id-b{flex:1;min-width:0}
+.id-b b{display:block;font-weight:600;font-size:14.5px;line-height:1.3;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.id-b span{display:block;font-size:11.5px;color:var(--dim);line-height:1.45}
+
+/* ---------- ปุ่มสลับหน้าในแท็บหน้าแรก ---------- */
+.gobtn{width:100%;max-width:320px;min-height:50px;margin-top:20px;border:0;border-radius:12px;
+  background:var(--red);color:#fff;font-family:'Anuphan',sans-serif;font-size:15.5px;font-weight:600;cursor:pointer}
+.backline{border:0;background:transparent;font-family:'Anuphan',sans-serif;font-size:13px;
+  font-weight:600;color:var(--blue);cursor:pointer;padding:0 2px;min-height:40px;
+  display:inline-flex;align-items:center;gap:6px}
+.homestat{margin-top:11px;font-size:12.5px;color:var(--dim);text-align:center}
+.homestat b{color:var(--navy);font-weight:600}
+.fav.rest{border-color:var(--navy);color:var(--navy);font-weight:600;gap:7px;
+  display:inline-flex;align-items:center;padding:0 15px 0 12px}
+.fav.rest svg{width:17px;height:17px}
+.fav.rest.off{border-color:var(--line-2);color:var(--dim);font-weight:500}
 
 /* ---------- ปุ่มวันพัก ---------- */
 .rest-btn{display:flex;align-items:center;gap:12px;width:100%;border:1px solid var(--line-2);
@@ -386,51 +418,71 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
   <p class="diag" id="errDiag"></p>
 </div>
 
-<!-- ============ ลงทะเบียน ============ -->
+<!-- ============ เข้าสู่ระบบครั้งแรก ============ -->
 <div class="center-page" id="regPage" hidden>
   <p class="kicker">HAPPY WORKPLACE 2026</p>
-  <h1 style="margin:8px 0 6px"><span class="nm">MinebeaMitsumi</span><span style="color:var(--orange)">FIT</span> <span style="color:var(--red)">FUN</span> <span style="color:var(--orange)">FIRM</span></h1>
-  <p style="font-size:13.5px;color:var(--dim);margin:6px 0 0">เข้าสู่ระบบครั้งแรก ทำครั้งเดียวจบ</p>
-  <div class="reg">
-    <label>รหัสพนักงาน <em id="cntEmno">0 / 5</em></label>
-    <div class="boxes" id="boxEmno"></div>
-    <p class="fieldnote" id="noteEmno">ตัวอักษรและตัวเลข 5 หลัก เช่น LC046</p>
-    <label style="margin-top:20px">วันที่เข้างาน <em id="cntDate">0 / 8</em></label>
-    <div class="boxes" id="boxDate"></div>
-    <p class="fieldnote" id="noteDate">ปี ค.ศ. 4 หลัก เดือน 2 หลัก วัน 2 หลัก</p>
-    <button class="btn" id="regGo" disabled style="margin-top:22px">กรอกให้ครบก่อน</button>
-    <div class="note">ระบบใช้วันที่เข้างานเพื่อยืนยันว่าเป็นเจ้าของรหัสจริง ข้อมูลตรงกับทะเบียนพนักงานของ HRA
-      หากลงทะเบียนไม่ผ่านหรือเปลี่ยนเครื่องใหม่ กรุณาติดต่อห้อง HRA</div>
+  <h1 style="margin:8px 0 0"><span class="nm">MinebeaMitsumi</span><span style="color:var(--orange)">FIT</span> <span style="color:var(--red)">FUN</span> <span style="color:var(--orange)">FIRM</span></h1>
+
+  <div class="card">
+    <h2>ยืนยันตัวตนก่อนเริ่ม</h2>
+    <p class="lead">ใช้ข้อมูลตามทะเบียนพนักงาน เพื่อกันการลงทะเบียนแทนกัน ทำครั้งเดียวจบ</p>
+
+    <div class="field">
+      <label for="fEmno">รหัสพนักงาน</label>
+      <input class="input" id="fEmno" placeholder="เช่น WE230" autocomplete="off"
+             autocapitalize="characters" spellcheck="false" inputmode="text" maxlength="12">
+      <div class="hint" id="hintEmno">ตัวอักษรและตัวเลข ไม่ต้องเว้นวรรค</div>
+    </div>
+
+    <div class="field">
+      <label>วันเข้างาน <em>ปี เดือน วัน</em></label>
+      <div class="otp" id="otp"></div>
+      <div class="hint" id="hintDate">ค.ศ. 8 หลัก เช่น 2026 – 02 – 05</div>
+    </div>
+
+    <button class="btn" id="regGo" disabled>กรอกให้ครบก่อน</button>
+    <div class="err hide" id="loginErr"></div>
+
+    <div class="note">ข้อมูลตรงกับทะเบียนพนักงานของ HRA หากลงทะเบียนไม่ผ่าน
+      หรือเปลี่ยนโทรศัพท์เครื่องใหม่ กรุณาติดต่อห้อง HRA</div>
   </div>
 </div>
 
 <!-- ============ แอพหลัก ============ -->
 <div id="shell" hidden>
 
-  <!-- ---- หน้าแรก ---- -->
+  <!-- ---- หน้าแรก: จอหมี ---- -->
   <div class="wrap view" id="vHome">
-    <div class="top">
-      <div>
+    <div id="homeBear">
+      <div style="text-align:center">
         <p class="kicker">HAPPY WORKPLACE 2026</p>
-        <h1><span class="nm">MinebeaMitsumi</span><span style="color:var(--orange)">FIT</span> <span style="color:var(--red)">FUN</span> <span style="color:var(--orange)">FIRM</span></h1>
+        <h1 style="margin:5px 0 0"><span class="nm">MinebeaMitsumi</span><span style="color:var(--orange)">FIT</span> <span style="color:var(--red)">FUN</span> <span style="color:var(--orange)">FIRM</span></h1>
       </div>
-      <div class="id"><b id="idCode">—</b><span id="idDiv">—</span></div>
+      <div class="bearwrap">
+        <div class="bubble" id="bubble">—</div>
+        <video class="bear" id="bear" src="bear.mp4" autoplay muted loop playsinline preload="auto" aria-label="มาสคอตหมี MinebeaMitsumi กำลังวิ่ง"></video>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center">
+        <button class="gobtn" id="goInput">ไปหน้าบันทึก</button>
+        <div class="homestat" id="homeStat"></div>
+      </div>
+      <div id="idCardBear"></div>
     </div>
 
-    <div class="bearwrap">
-      <div class="bubble" id="bubble">—</div>
-      <video class="bear" id="bear" src="bear.mp4" autoplay muted loop playsinline preload="auto" aria-label="มาสคอตหมี MinebeaMitsumi กำลังวิ่ง"></video>
-    </div>
-
-    <div id="heroSlot"></div>
-    <div class="sec" id="inputSec"></div>
-    <div class="sec">
-      <div class="sec-head">
-        <div class="sec-title">รายการวันนี้</div>
-        <div class="hint" id="cutHint"></div>
+    <!-- ---- หน้าแรก: จอบันทึก ---- -->
+    <div id="homeInput" hidden>
+      <button class="backline" id="backBear">‹ กลับไปหาหมี</button>
+      <div id="idCardMain"></div>
+      <div id="heroSlot"></div>
+      <div class="sec" id="inputSec"></div>
+      <div class="sec">
+        <div class="sec-head">
+          <div class="sec-title">รายการวันนี้</div>
+          <div class="hint" id="cutHint"></div>
+        </div>
+        <div id="todaySlot"></div>
+        <div id="brSlot"></div>
       </div>
-      <div id="todaySlot"></div>
-      <div id="brSlot"></div>
     </div>
   </div>
 
@@ -534,7 +586,7 @@ let S = {
   act:[], actVer:'', fav:[],
   q:'', cur:0, pick:null, min:30, favDraft:[], fq:'',
   rdPick:null, br:'idle', busy:false, idem:null,
-  tab:'home', sumView:'w', rwIdx:0, rwTimer:null, rwManual:false
+  tab:'home', home:'bear', sumView:'w', rwIdx:0, rwTimer:null, rwManual:false
 };
 
 const $ = s => document.querySelector(s);
@@ -705,7 +757,7 @@ function switchTab(k) {
   });
   drawTabbar();
   const v = $('#bear');
-  if (v) { if (k === 'home') v.play().catch(()=>{}); else v.pause(); }
+  if (v) { if (k === 'home' && S.home === 'bear') v.play().catch(()=>{}); else v.pause(); }
   if (k === 'hist') { drawSum(); drawHistList(); }
   if (k === 'rw') drawRwPage();
   drawBar();
@@ -714,108 +766,92 @@ function switchTab(k) {
 
 
 /* ==================================================================================
-   ลงทะเบียน — ช่องแบบกล่องทีละตัว
-   ถ้ารหัสพนักงานในองค์กรไม่ได้ยาว 5 หลักทุกคน แก้ EMNO_LEN ตัวเดียวพอ
+   เข้าสู่ระบบครั้งแรก
+   รหัสพนักงานเป็นช่องเดียวเพราะความยาวไม่เท่ากันทุกคน
+   วันเข้างานเป็นกล่องแยก 8 ตัว พิมพ์แล้วเด้งเอง ลบแล้วถอยเอง วางทีเดียวเต็มได้
    ================================================================================== */
-const EMNO_LEN = 5;
 let REG = {emno:'', date:''};
+let boxDate = null;
 
-/**
- * สร้างช่องกรอกแบบกล่อง พิมพ์แล้วเด้งช่องถัดไปเอง ลบแล้วถอยกลับเอง วางทีเดียวเต็มได้
- * groups ใช้แบ่งกลุ่มพร้อมขีดคั่น เช่น [4,2,2] = ปี เดือน วัน
- */
-function setupBoxes(elId, opts) {
+function setupOtp(elId, groups, onChange, onFull) {
   const el = document.getElementById(elId);
   el.innerHTML = '';
   const inputs = [];
-  const groups = opts.groups || [opts.len];
-  const ok = opts.numeric ? /[0-9]/ : /[A-Z0-9]/;
-
   groups.forEach((g, gi) => {
     if (gi) {
       const s = document.createElement('span');
-      s.className = 'sep'; s.textContent = '·';
+      s.className = 'sep'; s.textContent = '–';
       el.appendChild(s);
     }
     for (let i = 0; i < g; i++) {
       const inp = document.createElement('input');
-      inp.className = 'box';
-      inp.type = 'text';
-      inp.maxLength = 2;                       // เผื่อ IME บางตัวส่งมาสองตัว
-      inp.inputMode = opts.numeric ? 'numeric' : 'text';
-      inp.autocomplete = 'off';
-      inp.autocapitalize = 'characters';
-      inp.spellcheck = false;
-      inp.setAttribute('aria-label', opts.label + ' หลักที่ ' + (inputs.length + 1));
+      inp.type = 'text'; inp.maxLength = 2; inp.inputMode = 'numeric';
+      inp.autocomplete = 'off'; inp.spellcheck = false;
+      inp.setAttribute('aria-label', 'วันเข้างาน หลักที่ ' + (inputs.length + 1));
       el.appendChild(inp);
       inputs.push(inp);
     }
   });
 
   const value = () => inputs.map(x => x.value).join('');
-
-  function sync() {
-    inputs.forEach(x => x.classList.toggle('on', !!x.value));
-    opts.onChange(value());
-  }
+  const sync = () => { inputs.forEach(x => x.classList.toggle('on', !!x.value)); onChange(value()); };
 
   function fillFrom(start, text) {
-    const chars = String(text).toUpperCase().split('').filter(c => ok.test(c));
+    const chars = String(text).replace(/\D/g,'').split('');
     let i = start;
     chars.forEach(c => { if (i < inputs.length) inputs[i++].value = c; });
-    const next = Math.min(i, inputs.length - 1);
-    inputs[next].focus();
-    if (i >= inputs.length) opts.onFull && opts.onFull();
+    inputs[Math.min(i, inputs.length - 1)].focus();
+    if (i >= inputs.length && onFull) onFull();
     sync();
   }
 
   inputs.forEach((inp, i) => {
     inp.addEventListener('input', () => {
-      const raw = inp.value.toUpperCase();
-      const c = raw.slice(-1);
-      if (!ok.test(c)) { inp.value = raw.length > 1 ? raw.charAt(0) : ''; sync(); return; }
+      const c = inp.value.slice(-1);
+      if (!/[0-9]/.test(c)) { inp.value = ''; sync(); return; }
       inp.value = c;
       if (i < inputs.length - 1) inputs[i+1].focus();
-      else opts.onFull && opts.onFull();
+      else if (onFull) onFull();
       sync();
     });
-
     inp.addEventListener('keydown', e => {
       if (e.key === 'Backspace') {
-        if (!inp.value && i > 0) { e.preventDefault(); inputs[i-1].value = ''; inputs[i-1].focus(); sync(); }
-      } else if (e.key === 'ArrowLeft' && i > 0) { e.preventDefault(); inputs[i-1].focus(); }
-      else if (e.key === 'ArrowRight' && i < inputs.length - 1) { e.preventDefault(); inputs[i+1].focus(); }
-      else if (e.key === 'Enter') { e.preventDefault(); tryRegister(); }
+        if (!inp.value && i > 0) { e.preventDefault(); inputs[i-1].value=''; inputs[i-1].focus(); sync(); }
+      } else if (e.key === 'ArrowLeft'  && i > 0)                { e.preventDefault(); inputs[i-1].focus(); }
+      else if (e.key === 'ArrowRight' && i < inputs.length - 1)  { e.preventDefault(); inputs[i+1].focus(); }
+      else if (e.key === 'Enter')                                { e.preventDefault(); tryRegister(); }
     });
-
     inp.addEventListener('paste', e => {
       e.preventDefault();
       fillFrom(i, (e.clipboardData || window.clipboardData).getData('text'));
     });
-
     inp.addEventListener('focus', () => setTimeout(() => inp.select(), 0));
   });
 
-  return {inputs, value, clear(){ inputs.forEach(x => x.value=''); sync(); inputs[0].focus(); },
-          markBad(){ inputs.forEach(x => x.classList.add('bad'));
-                     setTimeout(() => inputs.forEach(x => x.classList.remove('bad')), 1600); }};
+  return {inputs, value,
+    markBad(){ inputs.forEach(x => x.classList.add('bad'));
+               setTimeout(() => inputs.forEach(x => x.classList.remove('bad')), 1600); }};
 }
 
-let boxEmno = null, boxDate = null;
-
 function initRegister() {
-  if (boxEmno) return;
-  boxEmno = setupBoxes('boxEmno', {
-    len: EMNO_LEN, label: 'รหัสพนักงาน',
-    onChange: v => { REG.emno = v; $('#cntEmno').textContent = v.length + ' / ' + EMNO_LEN; checkReg(); },
-    onFull: () => { boxDate.inputs[0].focus(); }
+  if (boxDate) return;
+  const emno = $('#fEmno');
+
+  emno.addEventListener('input', () => {
+    const v = emno.value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+    if (emno.value !== v) emno.value = v;
+    REG.emno = v;
+    checkReg();
   });
-  boxDate = setupBoxes('boxDate', {
-    len: 8, groups: [4,2,2], numeric: true, label: 'วันที่เข้างาน',
-    onChange: v => { REG.date = v; $('#cntDate').textContent = v.length + ' / 8'; checkReg(); },
-    onFull: () => { if (validDate(REG.date)) $('#regGo').focus(); }
+  emno.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); if (REG.emno.length >= 3) boxDate.inputs[0].focus(); }
   });
-  setTimeout(() => boxEmno.inputs[0].focus(), 250);
+
+  boxDate = setupOtp('otp', [4,2,2],
+    v => { REG.date = v; checkReg(); },
+    () => { if (validDate(REG.date) && REG.emno.length >= 3) $('#regGo').focus(); });
+
+  setTimeout(() => emno.focus(), 250);
 }
 
 function validDate(v) {
@@ -827,64 +863,74 @@ function validDate(v) {
   return {y, m, d, iso: v.substring(0,4) + '-' + v.substring(4,6) + '-' + v.substring(6,8)};
 }
 
+function regError(msg) {
+  const e = $('#loginErr');
+  if (!e) return;
+  if (!msg) { e.className = 'err hide'; e.textContent = ''; return; }
+  e.className = 'err'; e.textContent = msg;
+}
+
 function checkReg() {
-  const nD = $('#noteDate'), btn = $('#regGo');
-  const emnoOk = REG.emno.length === EMNO_LEN;
+  const hE = $('#hintEmno'), hD = $('#hintDate'), btn = $('#regGo');
+  const emnoOk = REG.emno.length >= 3;
+
+  hE.textContent = emnoOk ? 'รหัส ' + REG.emno : 'ตัวอักษรและตัวเลข ไม่ต้องเว้นวรรค';
+  hE.className = 'hint' + (emnoOk ? ' ok' : '');
 
   if (REG.date.length < 8) {
-    nD.textContent = 'ปี ค.ศ. 4 หลัก เดือน 2 หลัก วัน 2 หลัก';
-    nD.className = 'fieldnote';
+    hD.textContent = 'ค.ศ. 8 หลัก เช่น 2026 – 02 – 05';
+    hD.className = 'hint';
   } else {
     const v = validDate(REG.date);
     if (v) {
-      nD.textContent = 'วันที่ ' + v.d + ' ' + TH_MON_S[v.m-1] + ' ' + (v.y + 543);
-      nD.className = 'fieldnote ok';
+      hD.textContent = 'วันที่ ' + v.d + ' ' + TH_MON_S[v.m-1] + ' ' + (v.y + 543);
+      hD.className = 'hint ok';
     } else {
-      nD.textContent = 'วันที่ไม่ถูกต้อง ลองตรวจอีกครั้ง';
-      nD.className = 'fieldnote bad';
+      hD.textContent = 'วันที่ไม่ถูกต้อง ลองตรวจอีกครั้ง';
+      hD.className = 'hint bad';
     }
   }
 
   const ready = emnoOk && !!validDate(REG.date);
   btn.disabled = !ready;
-  btn.textContent = ready ? 'ลงทะเบียน'
-    : (!emnoOk ? 'กรอกรหัสพนักงานให้ครบ' : 'กรอกวันที่เข้างานให้ครบ');
+  btn.textContent = ready ? 'เข้าสู่ระบบ'
+    : (!emnoOk ? 'กรอกรหัสพนักงานก่อน' : 'กรอกวันเข้างานให้ครบ');
 }
 
 function tryRegister() { if (!$('#regGo').disabled) doRegister(); }
 
 async function doRegister() {
   const v = validDate(REG.date);
-  if (REG.emno.length !== EMNO_LEN || !v) return;
+  if (REG.emno.length < 3 || !v) return;
 
   const btn = $('#regGo');
+  regError('');
   btn.disabled = true; btn.textContent = 'กำลังตรวจสอบ...';
   try {
     const d = await api('register', {emno: REG.emno, birth: v.iso}, 'POST');
     if (!d.ok) {
-      toast(d.message || d.code, true);
+      regError(d.message || d.code);
       if (d.code === 'BIRTH_MISMATCH') boxDate.markBad();
-      else if (d.code === 'NOT_FOUND') boxEmno.markBad();
+      else if (d.code === 'NOT_FOUND') {
+        const e = $('#fEmno');
+        e.classList.add('bad');
+        setTimeout(() => e.classList.remove('bad'), 1600);
+      }
       return;
     }
-    $('#loadTitle').textContent = 'ยินดีต้อนรับ ' + (d.name || '');
+    $('#loadTitle').textContent = 'ยินดีต้อนรับ' + (d.name ? ' ' + d.name.split(' ')[0] : '');
     $('#loadMsg').textContent = 'กำลังโหลดข้อมูลของคุณ';
     showPage('loading');
     const b = await api('bootstrap');
     if (b.ok && b.registered) {
       S.cfg = b.config || S.cfg;
       S.todayKey = b.today;
-      applyBoot(b);
-      await ensureActivity(b.activityVersion);
-      S.fav = store.get('fav', ['B01','A01','D01','A06','F01','H04']);
-      render();
-      showPage('splash');
+      await enterApp(b);
     }
   } catch (e) {
-    toast('เชื่อมต่อไม่สำเร็จ ลองใหม่อีกครั้ง', true);
+    regError('เชื่อมต่อไม่สำเร็จ ตรวจสัญญาณแล้วลองใหม่อีกครั้ง');
   } finally {
     checkReg();
-    if (!$('#regGo').disabled) $('#regGo').textContent = 'ลงทะเบียน';
   }
 }
 
@@ -940,14 +986,12 @@ let heroBearEl = null;
 function heroBear() {
   if (REDUCED) return null;
   if (!heroBearEl) {
-    const wrap = document.createElement('div');
-    wrap.className = 'hbear';
     const v = document.createElement('video');
+    v.className = 'hbear';
     v.muted = true; v.loop = true; v.autoplay = true;
     v.setAttribute('playsinline',''); v.setAttribute('aria-hidden','true');
     v.src = 'bear.mp4';
-    wrap.appendChild(v);
-    heroBearEl = wrap;
+    heroBearEl = v;
   }
   return heroBearEl;
 }
@@ -979,7 +1023,7 @@ function drawHero() {
       <div class="htrack" id="htrack">
         <div class="hline"><div class="hfill" style="width:${pct}%"></div></div>
         ${list.map((r,i) => `<div class="hmark ${b>=r.cost?'on':''} ${i===idx?'now':''}"
-              style="left:calc(6px + (100% - 12px) * ${n>1?i/(n-1):0})">
+              style="left:calc(16px + (100% - 32px) * ${n>1?i/(n-1):0})">
             <div class="hdot"></div><div class="hlb">${r.cost}</div></div>`).join('')}
       </div>
 
@@ -1003,9 +1047,9 @@ function drawHero() {
 
   const bear = heroBear();
   if (bear) {
-    bear.style.left = `calc(6px + (100% - 12px) * ${pct/100})`;
+    bear.style.left = `calc(16px + (100% - 32px) * ${pct/100})`;
     $('#htrack').appendChild(bear);
-    const v = bear.querySelector('video'); const p = v && v.play(); if (p && p.catch) p.catch(()=>{});
+    const p = bear.play(); if (p && p.catch) p.catch(()=>{});
   }
   setupCarousel(list.length);
 }
@@ -1064,61 +1108,90 @@ function drawBubble() {
     </details>`;
 }
 
+function idCardHTML() {
+  const m = S.member || {};
+  return `<div class="id-card">
+    <div class="id-code">${m.emno || '—'}</div>
+    <div class="id-div"></div>
+    <div class="id-b">
+      <b>${m.name || '—'}</b>
+      <span>${[m.div, m.loc].filter(Boolean).join(' · ') || '—'}</span>
+    </div>
+  </div>`;
+}
+
 function drawHeader() {
-  if (!S.member) return;
-  $('#idCode').textContent = S.member.emno || '—';
-  $('#idDiv').textContent  = S.member.div || '—';
+  const a = $('#idCardBear'), b = $('#idCardMain');
+  if (a) a.innerHTML = idCardHTML();
+  if (b) b.innerHTML = idCardHTML();
+  const st = $('#homeStat');
+  if (st) {
+    st.innerHTML = S.rest.isToday
+      ? `วันนี้เป็นวันพักร่างกาย · แต้มสะสม <b>${S.points.balance}</b>`
+      : (S.today.length
+          ? `วันนี้บันทึกแล้ว <b>${S.todayMin} นาที</b> · แต้มสะสม <b>${S.points.balance}</b>`
+          : `วันนี้ยังไม่ได้บันทึก · แต้มสะสม <b>${S.points.balance}</b>`);
+  }
+}
+
+function showHome(which) {
+  S.home = which;
+  const a = $('#homeBear'), b = $('#homeInput');
+  if (a) a.hidden = (which !== 'bear');
+  if (b) b.hidden = (which !== 'input');
+  const v = $('#bear');
+  if (v) { if (which === 'bear' && S.tab === 'home') v.play().catch(()=>{}); else v.pause(); }
+  drawBar();
+  window.scrollTo(0,0);
 }
 
 /* ==================================================================================
    ส่วนบันทึก
    ================================================================================== */
-function restBlock() {
+function restChip() {
   const r = S.rest;
-  if (r.isToday) {
-    return `<div class="rest-done">
-      <div class="ic">${ICON_REST}</div>
-      <div class="b"><b>วันนี้คือวันพักร่างกาย</b><span>${S.todayPoint ? 'ได้ 1 แต้มแล้ว' : 'สัปดาห์นี้ได้แต้มวันพักครบแล้ว'}</span></div>
-    </div>`;
-  }
-  if (S.today.length) return '';
-  const can = r.canEarn;
-  return `<button class="rest-btn" id="restGo">
-    <span class="ic">${ICON_REST}</span>
-    <span class="b"><b>วันนี้พักร่างกาย</b>
-      <span>${can ? 'สัปดาห์นี้ยังไม่ได้ใช้ ได้ 1 แต้ม' : 'สัปดาห์นี้ใช้ไปแล้ว บันทึกได้แต่ไม่ได้แต้ม'}</span></span>
-    <span class="tag ${can?'':'off'}">${can ? '+1 แต้ม' : 'ไม่ได้แต้ม'}</span>
-  </button>`;
+  return `<button class="fav rest ${r.canEarn?'':'off'}" id="restGo">
+    ${ICON_REST}<span>วันนี้พัก${r.canEarn ? ' +1' : ''}</span></button>`;
 }
 
 function drawInput() {
   const sec = $('#inputSec');
   if (!sec) return;
+
   if (S.rest.isToday) {
-    sec.innerHTML = `<div class="sec-head"><div class="sec-title">วันนี้</div></div>` + restBlock();
+    sec.innerHTML = `<div class="sec-head"><div class="sec-title">วันนี้</div></div>
+      <div class="rest-done">
+        <div class="ic">${ICON_REST}</div>
+        <div class="b"><b>วันนี้คือวันพักร่างกาย</b>
+          <span>${S.todayPoint ? 'ได้ 1 แต้มแล้ว' : 'สัปดาห์นี้ได้แต้มวันพักครบแล้ว'}</span></div>
+      </div>`;
     return;
   }
   if (S.today.length >= S.cfg.maxEntries) {
     sec.innerHTML = `<div class="empty"><b>วันนี้บันทึกครบแล้ว</b>บันทึกได้วันละไม่เกิน ${S.cfg.maxEntries} ครั้ง พรุ่งนี้เริ่มใหม่ได้หลัง 04:00 น.</div>`;
     return;
   }
+
+  // ปุ่มวันพักอยู่หัวแถวใช้บ่อย เลือกได้เฉพาะวันที่ยังไม่ได้บันทึกอะไรเลย
+  const showRest = !S.today.length;
+
   sec.innerHTML = `
     <div class="sec-head">
       <div class="sec-title">วันนี้ทำอะไร</div>
       <div class="hint">${S.today.length ? 'เหลืออีก ' + (S.cfg.maxEntries - S.today.length) + ' ครั้ง' : 'วันละไม่เกิน ' + S.cfg.maxEntries + ' ครั้ง'}</div>
     </div>
-    ${restBlock()}
     <div class="search">
-      <input id="q" type="search" autocomplete="off" value="${S.q}" placeholder="หรือพิมพ์ชื่อกีฬา เช่น แบด วิ่ง โยคะ">
+      <input id="q" type="search" autocomplete="off" value="${S.q}" placeholder="พิมพ์ชื่อกีฬา เช่น แบด วิ่ง โยคะ">
       <button class="clr ${S.q?'on':''}" id="clr" aria-label="ล้างคำค้น">×</button>
     </div>
     <div id="resSlot"></div>
     <div id="favSlot">
       <div class="fav-head"><span>ใช้บ่อย</span><button class="link" data-fav="1">ตั้งค่า</button></div>
-      <div class="fav-row">${
-        S.fav.length
-          ? S.fav.map(c => `<button class="fav ${S.pick===c?'sel':''}" data-c="${c}">${A(c).n}</button>`).join('')
-          : `<button class="fav set" data-fav="1">+ เพิ่มกิจกรรมที่ใช้บ่อย</button>`}</div>
+      <div class="fav-row">
+        ${showRest ? restChip() : ''}
+        ${S.fav.map(c => `<button class="fav ${S.pick===c?'sel':''}" data-c="${c}">${A(c).n}</button>`).join('')}
+        ${S.fav.length ? '' : `<button class="fav set" data-fav="1">+ เพิ่มกิจกรรม</button>`}
+      </div>
     </div>
     <div id="panelSlot"></div>`;
   drawRes(); drawPanel();
@@ -1201,7 +1274,7 @@ function drawCut() {
 function drawBar() {
   const bar = $('#barFix');
   if (!bar) return;
-  const show = (S.tab === 'home') && !S.rest.isToday && S.today.length < S.cfg.maxEntries;
+  const show = (S.tab === 'home') && (S.home === 'input') && !S.rest.isToday && S.today.length < S.cfg.maxEntries;
   bar.hidden = !show;
   if (!show) return;
   $('#totNum').textContent = S.todayMin;
@@ -1543,6 +1616,8 @@ document.addEventListener('click', async e => {
   }
   if (t.id === 'regGo') { tryRegister(); return; }
   if (t.dataset.tab)    { switchTab(t.dataset.tab); return; }
+  if (t.id === 'goInput')  { showHome('input'); return; }
+  if (t.id === 'backBear') { showHome('bear'); return; }
   if (t.dataset.v)      { S.sumView = t.dataset.v; drawSum(); return; }
 
   if (t.id === 'moPrev' || t.id === 'moNext') {
@@ -1587,7 +1662,7 @@ document.addEventListener('click', async e => {
   /* ---- วันพัก ---- */
   if (t.id === 'restGo') {
     t.disabled = true;
-    t.querySelector('.tag').textContent = 'กำลังบันทึก...';
+    t.innerHTML = '<span class="mini-spin" style="border-color:rgba(18,58,120,.25);border-top-color:var(--navy)"></span> กำลังบันทึก';
     try {
       const d = await api('entry', {act:'REST', min:0, idem: uuid()}, 'POST');
       if (!d.ok) { toast(d.message || d.code, true); return; }
