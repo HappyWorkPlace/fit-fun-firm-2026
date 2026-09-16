@@ -62,7 +62,7 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
 .input:focus{border-color:var(--navy);outline:none;box-shadow:0 0 0 3px var(--wash-2)}
 .input.bad{border-color:var(--red);background:var(--red-soft)}
 .otp{display:flex;gap:6px;align-items:center;width:100%}
-.otp input{flex:1 1 0;min-width:0;height:54px;border:1px solid var(--line-2);border-radius:12px;
+.otp input{flex:1 1 0;min-width:0;min-height:54px;border:1px solid var(--line-2);border-radius:12px;
   background:var(--paper);text-align:center;padding:0;
   font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:500;color:var(--navy);
   caret-color:var(--red);transition:border-color .12s,background .12s}
@@ -287,7 +287,7 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
 .nav:disabled{opacity:.35;cursor:not-allowed}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
 .dow{text-align:center;font-family:'Barlow',sans-serif;font-weight:600;font-size:10px;letter-spacing:.1em;color:var(--dim);padding-bottom:4px}
-.cell{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:var(--wash);border:1px solid transparent}
+.cell{aspect-ratio:1;min-height:38px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:var(--wash);border:1px solid transparent}
 .cell.pad{background:transparent}
 .cell b{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:400;color:var(--dim);font-variant-numeric:tabular-nums}
 .cell u{text-decoration:none;font-family:'IBM Plex Mono',monospace;font-size:9px;color:transparent}
@@ -404,6 +404,78 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
 .toast.on{opacity:1;transform:translateX(-50%)}
 .toast.err{background:var(--red)}
 :focus-visible{outline:2px solid var(--red);outline-offset:2px}
+/* ------------------------------------------------------------------
+   จอแคบ — เกิดจากผู้ใช้ตั้ง "ขนาดการแสดงผล" ใหญ่ในเครื่อง
+   ผลคือความกว้างที่เว็บมองเห็นหดลง ไม่ใช่ของขยาย จึงต้องย่อของให้พอดี
+   ------------------------------------------------------------------ */
+@media (max-width:380px){
+  .wrap{padding:12px 12px 150px}
+  .center-page{padding:20px 14px}
+  h1{font-size:26px}
+  h1 .nm{font-size:16px}
+  .card{padding:18px 15px}
+  .card h2{font-size:17.5px}
+
+  /* ช่องวันที่ 8 ช่อง เก็บไว้แถวเดียว ซ่อนขีดคั่นเพื่อแลกกับความกว้างช่อง
+     บรรทัดใต้ช่องแปลงเป็นวันที่ไทยอยู่แล้ว จึงยังอ่านง่ายแม้ไม่มีขีดแบ่ง */
+  .otp{gap:4px}
+  .otp .sep{display:none}
+  .otp input{min-height:48px;font-size:17px}
+  .input{font-size:17px;min-height:50px}
+
+  /* บัตรพนักงาน */
+  .id-card{gap:10px;padding:11px 12px}
+  .id-code{font-size:17px}
+  .id-b b{font-size:13.5px}
+
+  /* แผงแต้ม */
+  .hero{padding:16px 13px 12px}
+  .hero-n{font-size:34px}
+  .htrack{height:104px;margin-top:12px}
+  .hbear{width:38px;bottom:38px}
+  .hline{left:12px;right:12px;top:68px}
+  .hmark{top:63px}
+  .hmark{--x:0}
+  .hlb{font-size:10px}
+  .hs-ic{width:54px;height:54px}
+  .hs-ic svg{width:31px;height:31px}
+  .hs-b h4{white-space:normal;font-size:15.5px;line-height:1.25}
+  .hs-b p{font-size:11px}
+  .hs-go{min-height:40px;padding:0 16px;font-size:13.5px}
+
+  /* ปฏิทิน */
+  .cal{gap:3px}
+  .cell{aspect-ratio:auto;min-height:40px;border-radius:8px}
+  .cell b{font-size:12px}
+  .legend{gap:9px;font-size:10.5px}
+  .stat b{font-size:19px}
+
+  /* แท็บล่าง */
+  .tb{min-height:54px;font-size:9.5px}
+  .tb svg{width:20px;height:20px}
+  .tb.on::before{width:38px}
+  .bar-fix{bottom:calc(54px + env(safe-area-inset-bottom))}
+  .bar-in{padding:10px 12px;gap:10px}
+  .cta{font-size:14px;min-height:46px}
+  .total b{font-size:21px}
+
+  /* ปุ่มและรายการ */
+  .fav{font-size:13px;padding:0 12px}
+  .mbtn{font-size:15px}
+  .item-b b{font-size:13.5px}
+  .res-b b{font-size:14px}
+}
+
+/* จอแคบมาก — เครื่องที่ตั้งขนาดการแสดงผลใหญ่สุด */
+@media (max-width:330px){
+  h1{font-size:23px}
+  .hero-n{font-size:30px}
+  .otp input{min-height:44px;font-size:15.5px}
+  .hbear{width:34px}
+  .tb span{font-size:9px}
+  .hs-ic{width:48px;height:48px}
+}
+
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -761,7 +833,10 @@ function diag() {
   return 'liff ' + (window.liff && liff.isLoggedIn && liff.isLoggedIn() ? 'in' : 'out') +
          ' · token ' + (S.idToken ? 'y' : 'n') +
          ' · uid ' + (S.uid ? S.uid.substring(0,6) + '…' : 'n') +
-         ' · client ' + (window.liff && liff.getOS ? liff.getOS() : '?');
+         ' · client ' + (window.liff && liff.getOS ? liff.getOS() : '?') +
+         ' · ' + window.innerWidth + 'x' + window.innerHeight +
+         ' @' + Math.round(parseFloat(getComputedStyle(document.documentElement).fontSize)) + 'px' +
+         ' dpr' + (window.devicePixelRatio || 1);
 }
 
 function jwtPayload(t) {
@@ -785,7 +860,7 @@ function drawTabbar() {
   const pending = S.redeemed.filter(x => x.st === 'PENDING').length;
   $('#tabbar').innerHTML = [
     ['home','หน้าแรก', ''],
-    ['hist','ประวัติบันทึก', ''],
+    ['hist','ประวัติ', ''],
     ['rw','ของรางวัล', pending ? `<span class="badge">${pending}</span>` : '']
   ].map(([k,label,badge]) =>
     `<button class="tb ${S.tab===k?'on':''}" data-tab="${k}">${TAB_ICONS[k]}${badge}<span>${label}</span></button>`
