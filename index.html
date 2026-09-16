@@ -25,7 +25,7 @@ body{background:var(--paper);color:var(--ink);font-family:'Anuphan',sans-serif;f
 @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @keyframes sp{to{transform:rotate(360deg)}}
 
-.wrap{max-width:520px;margin:0 auto;padding:14px 16px 150px}
+.wrap{max-width:520px;margin:0 auto;padding:14px 16px var(--botpad,150px)}
 .kicker{font-family:'Barlow',sans-serif;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.2em;color:var(--blue);margin:0}
 h1{font-family:'Barlow',sans-serif;font-style:italic;font-weight:700;font-size:30px;line-height:.95;color:var(--navy);margin:5px 0 0}
 h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margin-bottom:2px}
@@ -146,6 +146,10 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
 .hs-ic{width:62px;height:62px;border-radius:16px;background:rgba(255,255,255,.1);flex:0 0 auto;
   display:flex;align-items:center;justify-content:center;color:#fff}
 .hs-ic svg{width:36px;height:36px}
+.hs-ic.img{background:#fff;padding:6px}
+.hs-ic.img img{width:100%;height:100%;object-fit:contain;display:block}
+.rh .ic.img{background:#fff;border:1px solid var(--line);padding:5px}
+.rh .ic.img img{width:100%;height:100%;object-fit:contain;display:block}
 .hs-b{flex:1;min-width:0}
 .hs-b h4{margin:0 0 2px;font-size:16.5px;font-weight:600;color:#fff;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -400,12 +404,20 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
 .modal-a{display:flex;gap:8px}
 .btn-g{flex:1;min-height:46px;border-radius:10px;border:1px solid var(--line-2);background:var(--paper);font-family:'Anuphan',sans-serif;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer}
 .btn-r{flex:1;min-height:46px;border-radius:10px;border:0;background:var(--red);color:#fff;font-family:'Anuphan',sans-serif;font-size:14px;font-weight:600;cursor:pointer}
+/* โครงเทาระหว่างรอข้อมูล ทำให้หน้าจอขึ้นทันทีแทนการหมุนรอ
+   เวลาจริงเท่าเดิม แต่ความรู้สึกต่างกันมาก */
+@keyframes shim{0%{background-position:-280px 0}100%{background-position:280px 0}}
+.sk{border-radius:8px;background:linear-gradient(90deg,var(--wash-2) 25%,var(--wash) 50%,var(--wash-2) 75%);
+  background-size:280px 100%;animation:shim 1.1s linear infinite;color:transparent!important}
+.sk *{visibility:hidden}
+.hero .sk{background:linear-gradient(90deg,rgba(255,255,255,.12) 25%,rgba(255,255,255,.22) 50%,rgba(255,255,255,.12) 75%);
+  background-size:280px 100%}
 .dbg{position:fixed;left:0;right:0;top:0;z-index:60;background:rgba(18,35,61,.92);color:#9fd0ff;
   font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.55;padding:6px 10px;
   white-space:pre-wrap;word-break:break-word}
 .dbg b{color:#fff;font-weight:500}
 .dbg .w{color:#ffb4ae}
-.toast{position:fixed;left:50%;bottom:130px;transform:translateX(-50%) translateY(6px);background:var(--navy);color:#fff;font-size:14px;padding:11px 18px;border-radius:100px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50;max-width:88vw;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(var(--botpad,150px) - 18px);transform:translateX(-50%) translateY(6px);background:var(--navy);color:#fff;font-size:14px;padding:11px 18px;border-radius:100px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50;max-width:88vw;text-align:center}
 .toast.on{opacity:1;transform:translateX(-50%)}
 .toast.err{background:var(--red)}
 :focus-visible{outline:2px solid var(--red);outline-offset:2px}
@@ -414,7 +426,7 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
    ผลคือความกว้างที่เว็บมองเห็นหดลง ไม่ใช่ของขยาย จึงต้องย่อของให้พอดี
    ------------------------------------------------------------------ */
 @media (max-width:380px){
-  .wrap{padding:12px 12px 150px}
+  .wrap{padding:12px 12px var(--botpad,150px)}
   .center-page{padding:20px 14px}
   h1{font-size:26px}
   h1 .nm{font-size:16px}
@@ -567,7 +579,7 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
       </div>
       <div class="bearwrap">
         <div class="bubble" id="bubble">—</div>
-        <video class="bear" id="bear" data-src="bear.mp4" autoplay muted loop playsinline preload="none" aria-label="มาสคอตหมี MinebeaMitsumi กำลังวิ่ง"></video>
+        <video class="bear" id="bear" autoplay muted loop playsinline preload="none" aria-label="มาสคอตหมี MinebeaMitsumi"></video>
       </div>
       <div style="display:flex;flex-direction:column;align-items:center">
         <button class="gobtn" id="goInput">ไปหน้าบันทึก</button>
@@ -734,6 +746,14 @@ if (DEBUG) {
   });
 }
 const DOW = ['อา','จ','อ','พ','พฤ','ศ','ส'];
+
+/* หมีบนหน้าแรกสุ่มจากคลิปเหล่านี้ ส่วนหมีบนแถบแต้มต้องเป็น bear.mp4 เสมอ
+   เพราะมันกำลัง "วิ่งไปตามเส้นทางสะสมแต้ม" ถ้าสุ่มเป็นเตะบอลหรือปั่นจักรยาน
+   ความหมายของภาพจะขัดกับสิ่งที่แถบนั้นสื่อ */
+const BEAR_RUN = 'bear.mp4';
+const BEAR_CLIPS = ['bear.mp4','bear_badminton.mp4','bear_bicycle.mp4',
+                    'bear_fitness.mp4','bear_football.mp4'];
+const BEAR_PICK = BEAR_CLIPS[Math.floor(Math.random() * BEAR_CLIPS.length)];
 const TH_MON = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
                 'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 const TH_MON_S = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
@@ -812,6 +832,15 @@ async function boot() {
   }
 
   $('#loadMsg').textContent = 'กำลังโหลดข้อมูลของคุณ';
+
+  // เคยลงทะเบียนบนเครื่องนี้แล้ว ขึ้นหน้าจอพร้อมโครงเทาได้เลย ไม่ต้องรอหมุน
+  if (store.get('reg', false)) {
+    drawTabbar();
+    drawSkeleton();
+    showPage('shell');
+    lap('shell');
+  }
+
   try {
     const d = await api('bootstrap');
     lap('boot');
@@ -822,7 +851,8 @@ async function boot() {
     }
     S.cfg = d.config || S.cfg;
     S.todayKey = d.today;
-    if (!d.registered) { showPage('regPage'); initRegister(); return; }
+    if (!d.registered) { store.set('reg', false); showPage('regPage'); initRegister(); return; }
+    store.set('reg', true);
     await enterApp(d);
   } catch (e) {
     showError('เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ', String(e.message || e));
@@ -840,7 +870,7 @@ async function enterApp(d) {
 
   // เริ่มโหลดวิดีโอหลังข้อมูลมาถึงแล้ว จะได้ไม่แย่งแบนด์วิดท์กับ API ตอนเปิดแอพ
   const v = $('#bear');
-  if (v && !v.src && v.dataset.src) { v.src = v.dataset.src; v.load(); }
+  if (v && !v.src) { v.src = BEAR_PICK; v.load(); }
   if (v && DEBUG) {
     if (v.readyState >= 2) mark('video', performance.now());
     else v.addEventListener('loadeddata', () => mark('video', performance.now()), {once:true});
@@ -1198,6 +1228,28 @@ function hl(name, q) {
    ================================================================================== */
 const ICON_REST = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/></svg>`;
 
+/**
+ * ไฟล์ภาพของรางวัลในรีโป
+ * ถ้าคอลัมน์ IconKey ในชีท Rewards ใส่ชื่อไฟล์ .png มาเอง จะใช้ค่านั้นก่อน
+ * ถ้าไม่ใส่ จะเทียบจากรหัสของรางวัลตามตารางนี้ และถ้าไม่มีทั้งคู่จึงถอยไปใช้ไอคอนเส้น
+ */
+const ICON_FILE = {
+  R10:'tissue.png', R15:'sock.png', R20:'bottle.png', R25:'bag.png', R30:'scarf.png'
+};
+
+function iconSrc(r) {
+  const k = String(r.icon || '');
+  if (/\.(png|jpg|jpeg|webp|svg)$/i.test(k)) return k;
+  return ICON_FILE[r.id] || ICON_FILE[k] || null;
+}
+
+/** กล่องไอคอน ใช้ภาพถ้ามี ไม่มีค่อยวาดเส้น */
+function iconBox(r, cls) {
+  const src = iconSrc(r);
+  if (src) return `<div class="${cls} img"><img src="${src}" alt="${r.n || ''}" loading="lazy"></div>`;
+  return `<div class="${cls}">${ICONS[r.icon] || ICONS[r.id] || ''}</div>`;
+}
+
 const ICONS = {
  R10:`<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 5c1.6 2.2 2.7 3.6 2.7 4.9a2.7 2.7 0 1 1-5.4 0C17.3 8.6 18.4 7.2 20 5z"/><rect x="6.5" y="16" width="27" height="18" rx="4"/><path d="M13 16v-2a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v2"/><path d="M16 24h8"/></svg>`,
  R15:`<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6h10v14.5c0 1.7.8 2.7 2.2 3.6l3.4 2.2c2.6 1.7 2.2 5.6-.7 6.8-2 .8-4.3.4-6-1L15.3 27c-.9-.8-1.3-1.9-1.3-3.1V6z"/><path d="M14 11h10"/></svg>`,
@@ -1220,7 +1272,8 @@ function heroBear() {
     v.className = 'hbear';
     v.muted = true; v.loop = true; v.autoplay = true;
     v.setAttribute('playsinline',''); v.setAttribute('aria-hidden','true');
-    v.src = 'bear.mp4';
+    v.preload = 'none';
+    v.src = BEAR_RUN;          // หมีวิ่งเท่านั้น ห้ามสุ่มคลิปอื่นมาใส่แถบแต้ม
     heroBearEl = v;
   }
   return heroBearEl;
@@ -1263,7 +1316,7 @@ function drawHero() {
           const label = !r.active ? 'ของหมดแล้ว'
                       : (b >= r.cost ? `แลก ${r.cost} <span class="star">★</span>` : `อีก ${r.cost - b} แต้ม`);
           return `<div class="hs">
-            <div class="hs-ic">${ICONS[r.icon] || ICONS[r.id] || ''}</div>
+            ${iconBox(r, 'hs-ic')}
             <div class="hs-b">
               <h4>${r.n}</h4>
               <p>${r.d}${r.active ? ' · เหลือ ' + r.left + ' ชิ้น' : ''}</p>
@@ -1348,6 +1401,34 @@ function idCardHTML() {
       <span>${[m.div, m.loc].filter(Boolean).join(' · ') || '—'}</span>
     </div>
   </div>`;
+}
+
+/** วาดโครงเทาไว้ก่อน แล้วค่อยแทนที่ด้วยข้อมูลจริงเมื่อ bootstrap กลับมา */
+function drawSkeleton() {
+  const b = $('#bubble');
+  if (b) b.innerHTML =
+    '<div class="sk" style="height:13px;width:40%;margin-bottom:10px"></div>' +
+    '<div class="sk" style="height:17px;width:88%;margin-bottom:9px"></div>' +
+    '<div class="sk" style="height:13px;width:96%;margin-bottom:7px"></div>' +
+    '<div class="sk" style="height:13px;width:72%"></div>';
+
+  ['#idCardBear','#idCardMain'].forEach(sel => {
+    const el = $(sel);
+    if (el) el.innerHTML = '<div class="id-card"><div class="sk" style="height:42px;width:100%"></div></div>';
+  });
+
+  const hs = $('#heroSlot');
+  if (hs) hs.innerHTML =
+    '<div class="hero">' +
+      '<div class="sk" style="height:12px;width:28%;margin-bottom:9px"></div>' +
+      '<div class="sk" style="height:34px;width:52%;margin-bottom:9px"></div>' +
+      '<div class="sk" style="height:12px;width:64%"></div>' +
+      '<div style="background:#fff;border-radius:16px;height:104px;margin-top:16px;opacity:.9"></div>' +
+      '<div class="sk" style="height:58px;width:100%;margin-top:16px"></div>' +
+    '</div>';
+
+  const st = $('#homeStat');
+  if (st) st.textContent = '';
 }
 
 function drawHeader() {
@@ -1501,6 +1582,18 @@ function drawCut() {
   el.innerHTML = `ปิดรับใน ${Math.floor(ms/3600000)} ชม. ${Math.floor(ms%3600000/60000)} นาที<br>ย้อนหลังไม่ได้`;
 }
 
+/**
+ * วัดความสูงจริงของแถบปุ่มกับแท็บล่าง แล้วเว้นที่ด้านล่างให้พอดี
+ * ตัวเลขตายตัวใช้ไม่ได้ เพราะความสูงเปลี่ยนตามขนาดตัวอักษรของเครื่อง ตามการมีหรือไม่มีปุ่มบันทึก
+ * และตามพื้นที่ปลอดภัยของเครื่องที่มีติ่ง
+ */
+function fitBottom() {
+  const tb = $('#tabbar'), bar = $('#barFix');
+  const hTab = tb ? tb.offsetHeight : 0;
+  const hBar = (bar && !bar.hidden) ? bar.offsetHeight : 0;
+  document.documentElement.style.setProperty('--botpad', (hTab + hBar + 24) + 'px');
+}
+
 function drawBar() {
   const bar = $('#barFix');
   if (!bar) return;
@@ -1512,6 +1605,7 @@ function drawBar() {
   if (S.busy) { c.textContent = 'กำลังบันทึก...'; c.disabled = true; }
   else if (!S.pick) { c.textContent = 'เลือกกิจกรรมก่อน'; c.disabled = true; }
   else { c.textContent = 'บันทึก ' + S.min + ' นาที'; c.disabled = false; }
+  fitBottom();
 }
 
 /* ==================================================================================
@@ -1678,7 +1772,7 @@ function drawRwPage() {
     const rw = S.rewards.find(r => r.id === x.id) || {};
     const st = RW_STATUS[x.st] || RW_STATUS.PENDING;
     return `<div class="rh">
-      <div class="ic">${ICONS[rw.icon] || ICONS[x.id] || ''}</div>
+      ${iconBox({id:x.id, icon:rw.icon, n:x.n || rw.n}, 'ic')}
       <div class="b"><b>${x.n || rw.n || x.id}</b>
         <span>แลกเมื่อ ${thDate(x.at)}</span><br>
         <span class="chip ${st.c}">${st.t}</span></div>
@@ -2042,6 +2136,12 @@ document.addEventListener('click', async e => {
 });
 
 setInterval(drawCut, 60000);
+window.addEventListener('resize', fitBottom);
+window.addEventListener('orientationchange', () => setTimeout(fitBottom, 250));
+if (window.ResizeObserver) {
+  const ro = new ResizeObserver(fitBottom);
+  ['#tabbar','#barFix'].forEach(s => { const el = $(s); if (el) ro.observe(el); });
+}
 boot();
 </script>
 </body>
