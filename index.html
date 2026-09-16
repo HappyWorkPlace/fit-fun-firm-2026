@@ -400,6 +400,11 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
 .modal-a{display:flex;gap:8px}
 .btn-g{flex:1;min-height:46px;border-radius:10px;border:1px solid var(--line-2);background:var(--paper);font-family:'Anuphan',sans-serif;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer}
 .btn-r{flex:1;min-height:46px;border-radius:10px;border:0;background:var(--red);color:#fff;font-family:'Anuphan',sans-serif;font-size:14px;font-weight:600;cursor:pointer}
+.dbg{position:fixed;left:0;right:0;top:0;z-index:60;background:rgba(18,35,61,.92);color:#9fd0ff;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.55;padding:6px 10px;
+  white-space:pre-wrap;word-break:break-word}
+.dbg b{color:#fff;font-weight:500}
+.dbg .w{color:#ffb4ae}
 .toast{position:fixed;left:50%;bottom:130px;transform:translateX(-50%) translateY(6px);background:var(--navy);color:#fff;font-size:14px;padding:11px 18px;border-radius:100px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50;max-width:88vw;text-align:center}
 .toast.on{opacity:1;transform:translateX(-50%)}
 .toast.err{background:var(--red)}
@@ -675,6 +680,7 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
   </div>
 </div>
 
+<div class="dbg" id="dbg" hidden></div>
 <div class="toast" id="toast"></div>
 <script>
 /* ==================================================================================
@@ -684,6 +690,49 @@ const API = 'https://script.google.com/macros/s/AKfycbzekumBtvLn7NIVbfj2ui184Zur
 const LIFF_ID = '2011503996-EwbjEuhb';
 
 const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ==================================================================================
+   จับเวลา เปิดด้วย ?debug=1 ท้าย URL
+   performance.now() นับจากตอนเริ่มโหลดหน้า จึงรวมเวลาดาวน์โหลด HTML และ SDK ไว้ด้วย
+   ================================================================================== */
+const DEBUG = new URLSearchParams(location.search).get('debug') === '1';
+const T = {};
+let tLast = 0;
+function lap(k) {
+  const now = performance.now();
+  T[k] = Math.round(now - tLast);
+  tLast = now;
+  if (DEBUG) drawDbg();
+}
+function mark(k, v) { T[k] = Math.round(v); if (DEBUG) drawDbg(); }
+
+function drawDbg() {
+  const el = document.getElementById('dbg');
+  if (!el || !DEBUG) return;
+  el.hidden = false;
+  const s = T.srv || {};
+  const srvLine = Object.keys(s).length
+    ? '\nsrv ' + Object.keys(s).map(k => k + ' ' + s[k]).join(' · ')
+    : '';
+  const gap = (T.boot && s.total) ? T.boot - s.total : null;
+  el.innerHTML =
+    '<b>' + Object.keys(T).filter(k => k !== 'srv')
+      .map(k => k + ' ' + T[k]).join(' · ') + '</b>' +
+    srvLine +
+    (gap !== null ? '\n<span class="' + (gap > 1500 ? 'w' : '') + '">ต่าง ' + gap +
+      ' ms = cold start + redirect (แก้ในโค้ดไม่ได้)</span>' : '') +
+    '\n' + window.innerWidth + 'x' + window.innerHeight +
+    ' @' + Math.round(parseFloat(getComputedStyle(document.documentElement).fontSize)) + 'px';
+}
+
+if (DEBUG) {
+  document.addEventListener('DOMContentLoaded', () => {
+    mark('html', performance.now());
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => mark('font', performance.now()));
+    }
+  });
+}
 const DOW = ['อา','จ','อ','พ','พฤ','ศ','ส'];
 const TH_MON = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
                 'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
@@ -738,11 +787,14 @@ async function api(action, params = {}, method = 'GET') {
    เริ่มต้น
    ================================================================================== */
 async function boot() {
+  tLast = performance.now();
+  lap('sdk');
   if (API.indexOf('PASTE_') === 0) {
     return showError('ยังไม่ได้ตั้งค่า API', 'เปิดไฟล์ index.html แล้วใส่ URL ของ Web App ในตัวแปร API');
   }
   try {
     await liff.init({liffId: LIFF_ID});
+    lap('init');
     if (!liff.isLoggedIn()) { liff.login(); return; }
     try { S.idToken = liff.getIDToken(); } catch (e) { S.idToken = null; }
     try {
@@ -762,6 +814,8 @@ async function boot() {
   $('#loadMsg').textContent = 'กำลังโหลดข้อมูลของคุณ';
   try {
     const d = await api('bootstrap');
+    lap('boot');
+    if (d._ms) { T.srv = d._ms; if (DEBUG) drawDbg(); }
     if (!d.ok) {
       if (d.code === 'NO_TOKEN' || d.code === 'AUTH_FAILED') return showLogin(d.message);
       return showError('เข้าสู่ระบบไม่สำเร็จ', d.message || d.code);
@@ -782,6 +836,14 @@ async function enterApp(d) {
   drawTabbar();
   render();
   showPage('shell');
+  lap('render');
+
+  // วิดีโอหมีวัดแยก เพราะมันโหลดขนานไปกับทุกอย่าง ไม่ได้บล็อกการวาดหน้า
+  const v = $('#bear');
+  if (v && DEBUG) {
+    if (v.readyState >= 2) mark('video', performance.now());
+    else v.addEventListener('loadeddata', () => mark('video', performance.now()), {once:true});
+  }
 }
 
 function applyBoot(d) {
@@ -836,7 +898,8 @@ function diag() {
          ' · client ' + (window.liff && liff.getOS ? liff.getOS() : '?') +
          ' · ' + window.innerWidth + 'x' + window.innerHeight +
          ' @' + Math.round(parseFloat(getComputedStyle(document.documentElement).fontSize)) + 'px' +
-         ' dpr' + (window.devicePixelRatio || 1);
+         ' dpr' + (window.devicePixelRatio || 1) +
+         (T.boot ? ' · boot ' + T.boot + 'ms' + (T.srv ? ' (srv ' + T.srv.total + ')' : '') : '');
 }
 
 function jwtPayload(t) {
