@@ -567,7 +567,7 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
       </div>
       <div class="bearwrap">
         <div class="bubble" id="bubble">—</div>
-        <video class="bear" id="bear" src="bear.mp4" autoplay muted loop playsinline preload="auto" aria-label="มาสคอตหมี MinebeaMitsumi กำลังวิ่ง"></video>
+        <video class="bear" id="bear" data-src="bear.mp4" autoplay muted loop playsinline preload="none" aria-label="มาสคอตหมี MinebeaMitsumi กำลังวิ่ง"></video>
       </div>
       <div style="display:flex;flex-direction:column;align-items:center">
         <button class="gobtn" id="goInput">ไปหน้าบันทึก</button>
@@ -838,8 +838,9 @@ async function enterApp(d) {
   showPage('shell');
   lap('render');
 
-  // วิดีโอหมีวัดแยก เพราะมันโหลดขนานไปกับทุกอย่าง ไม่ได้บล็อกการวาดหน้า
+  // เริ่มโหลดวิดีโอหลังข้อมูลมาถึงแล้ว จะได้ไม่แย่งแบนด์วิดท์กับ API ตอนเปิดแอพ
   const v = $('#bear');
+  if (v && !v.src && v.dataset.src) { v.src = v.dataset.src; v.load(); }
   if (v && DEBUG) {
     if (v.readyState >= 2) mark('video', performance.now());
     else v.addEventListener('loadeddata', () => mark('video', performance.now()), {once:true});
