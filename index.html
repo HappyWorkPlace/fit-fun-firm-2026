@@ -708,6 +708,8 @@ const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
    performance.now() นับจากตอนเริ่มโหลดหน้า จึงรวมเวลาดาวน์โหลด HTML และ SDK ไว้ด้วย
    ================================================================================== */
 const DEBUG = new URLSearchParams(location.search).get('debug') === '1';
+/* ถ้าถูกส่งมาจากหน้าอื่นเพื่อลงทะเบียน จะพากลับไปหน้านั้นทันทีที่ลงทะเบียนเสร็จ */
+const NEXT = new URLSearchParams(location.search).get('next') || '';
 const T = {};
 let tLast = 0;
 function lap(k) {
@@ -853,6 +855,7 @@ async function boot() {
     S.todayKey = d.today;
     if (!d.registered) { store.set('reg', false); showPage('regPage'); initRegister(); return; }
     store.set('reg', true);
+    if (NEXT === 'survey') { location.replace('survey.html'); return; }
     await enterApp(d);
   } catch (e) {
     showError('เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ', String(e.message || e));
@@ -1173,6 +1176,7 @@ async function doRegister() {
     $('#loadTitle').textContent = 'ยินดีต้อนรับ ' + firstName(d.name || REG.found.name);
     $('#loadMsg').textContent = 'กำลังโหลดข้อมูลของคุณ';
     showPage('loading');
+    if (NEXT === 'survey') { location.replace('survey.html'); return; }
     const b = await api('bootstrap');
     if (b.ok && b.registered) {
       S.cfg = b.config || S.cfg;
