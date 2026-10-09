@@ -17,6 +17,7 @@
   --line:#dce5ef; --line-2:#c3d2e3;
   --ok:#127a55; --ok-soft:#e7f6ef;
   --orange:#e8791f; --gold:#f0a24a;
+  --cream:#fdf4e0; --cream-line:#efddb3; --cream-deep:#f3e3ba;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -329,27 +330,29 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
 .chip.picked{background:var(--ok-soft);color:var(--ok)}
 .chip.expired,.chip.cancelled{background:var(--wash-2);color:var(--dim)}
 
-/* ---------- ฝึกหายใจ ---------- */
-.br{border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:12px}
+/* ---------- ฝึกหายใจ — พื้นครีมให้เด่นขึ้นมาหลังบันทึกเสร็จ ---------- */
+.br{background:var(--cream);border:1px solid var(--cream-line);border-radius:14px;padding:16px;margin-top:12px;
+  --br-ring:#e3cf9c; --br-core:var(--cream-deep); --br-dot:var(--navy); --br-track:#ecdcae;
+  animation:rise .3s ease-out}
 .br-i{display:flex;align-items:center;gap:14px}
 .br-i div{flex:1}
 .br-i b{display:block;font-size:15px;font-weight:600;color:var(--navy)}
-.br-i span{font-size:12.5px;color:var(--dim)}
-.br-go{flex:0 0 auto;min-height:44px;padding:0 18px;border:1px solid var(--navy);background:var(--paper);border-radius:100px;font-family:'Anuphan',sans-serif;font-size:14px;font-weight:600;color:var(--navy);cursor:pointer}
+.br-i span{font-size:12.5px;color:#7a6a45}
+.br-go{flex:0 0 auto;min-height:44px;padding:0 20px;border:0;background:var(--navy);border-radius:100px;font-family:'Anuphan',sans-serif;font-size:14px;font-weight:600;color:#fff;cursor:pointer}
 .br-run{display:flex;flex-direction:column;align-items:center;gap:14px;padding:6px 0 2px}
 .stage{position:relative;width:216px;height:216px}
 .stage svg{position:absolute;inset:0;width:100%;height:100%}
 .br-txt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;pointer-events:none}
 .br-txt b{font-size:17px;font-weight:600;color:var(--navy)}
-.br-txt span{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--dim);font-variant-numeric:tabular-nums}
+.br-txt span{font-family:'IBM Plex Mono',monospace;font-size:13px;color:#7a6a45;font-variant-numeric:tabular-nums}
 .br-num{font-family:'Barlow',sans-serif;font-weight:700;font-size:60px;line-height:1;color:var(--navy);font-variant-numeric:tabular-nums}
-.br-prep{font-size:13px;color:var(--dim);text-align:center;max-width:210px;line-height:1.4}
+.br-prep{font-size:13px;color:#7a6a45;text-align:center;max-width:210px;line-height:1.4}
 .dots{display:flex;gap:6px}
-.dots i{width:22px;height:4px;border-radius:2px;background:var(--wash-2)}
+.dots i{width:22px;height:4px;border-radius:2px;background:var(--br-track)}
 .dots i.on{background:var(--navy)}
-.prog{width:200px;height:4px;border-radius:2px;background:var(--wash-2);overflow:hidden;display:none}
+.prog{width:200px;height:4px;border-radius:2px;background:var(--br-track);overflow:hidden;display:none}
 .prog b{display:block;height:100%;background:var(--navy);width:0}
-.skip{border:0;background:transparent;font-family:'Anuphan',sans-serif;font-size:13px;color:var(--dim);text-decoration:underline;cursor:pointer;min-height:44px;padding:0 12px}
+.skip{border:0;background:transparent;font-family:'Anuphan',sans-serif;font-size:13px;color:#7a6a45;text-decoration:underline;cursor:pointer;min-height:44px;padding:0 12px}
 .br-done{display:flex;gap:10px;align-items:center;background:var(--ok-soft);color:var(--ok);border-radius:12px;padding:12px 14px;font-size:13.5px;margin-top:12px}
 .br-done i{font-style:normal;font-weight:700}
 
@@ -404,6 +407,17 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
 .modal-a{display:flex;gap:8px}
 .btn-g{flex:1;min-height:46px;border-radius:10px;border:1px solid var(--line-2);background:var(--paper);font-family:'Anuphan',sans-serif;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer}
 .btn-r{flex:1;min-height:46px;border-radius:10px;border:0;background:var(--red);color:#fff;font-family:'Anuphan',sans-serif;font-size:14px;font-weight:600;cursor:pointer}
+
+/* ---------- หน้าจอมืดกลางจอ ขณะรอเซิร์ฟเวอร์ ---------- */
+.busy{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  background:rgba(10,20,38,.72);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+  animation:fade .15s ease-out}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.busy-ring{width:64px;height:64px;border-radius:50%;border:4px solid rgba(255,255,255,.2);
+  border-top-color:#fff;animation:sp .8s linear infinite}
+.busy-msg{margin:0;color:#fff;font-size:16px;font-weight:600;text-align:center;padding:0 24px}
+.busy-sub{margin:-10px 0 0;color:rgba(255,255,255,.65);font-size:12.5px;text-align:center;padding:0 24px}
+
 /* โครงเทาระหว่างรอข้อมูล ทำให้หน้าจอขึ้นทันทีแทนการหมุนรอ
    เวลาจริงเท่าเดิม แต่ความรู้สึกต่างกันมาก */
 @keyframes shim{0%{background-position:-280px 0}100%{background-position:280px 0}}
@@ -412,12 +426,12 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
 .sk *{visibility:hidden}
 .hero .sk{background:linear-gradient(90deg,rgba(255,255,255,.12) 25%,rgba(255,255,255,.22) 50%,rgba(255,255,255,.12) 75%);
   background-size:280px 100%}
-.dbg{position:fixed;left:0;right:0;top:0;z-index:60;background:rgba(18,35,61,.92);color:#9fd0ff;
+.dbg{position:fixed;left:0;right:0;top:0;z-index:90;background:rgba(18,35,61,.92);color:#9fd0ff;
   font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.55;padding:6px 10px;
   white-space:pre-wrap;word-break:break-word}
 .dbg b{color:#fff;font-weight:500}
 .dbg .w{color:#ffb4ae}
-.toast{position:fixed;left:50%;bottom:calc(var(--botpad,150px) - 18px);transform:translateX(-50%) translateY(6px);background:var(--navy);color:#fff;font-size:14px;padding:11px 18px;border-radius:100px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50;max-width:88vw;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(var(--botpad,150px) - 18px);transform:translateX(-50%) translateY(6px);background:var(--navy);color:#fff;font-size:14px;padding:11px 18px;border-radius:100px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:100;max-width:88vw;text-align:center}
 .toast.on{opacity:1;transform:translateX(-50%)}
 .toast.err{background:var(--red)}
 :focus-visible{outline:2px solid var(--red);outline-offset:2px}
@@ -493,7 +507,11 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
   .hs-ic{width:48px;height:48px}
 }
 
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  /* วงหมุนรอเซิร์ฟเวอร์ต้องหมุนต่อ เพราะเป็นสัญญาณว่าระบบกำลังทำงาน ไม่ใช่การตกแต่ง */
+  .busy-ring{animation:sp 1.2s linear infinite!important}
+}
 </style>
 </head>
 <body>
@@ -692,6 +710,13 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
   </div>
 </div>
 
+<!-- หน้าจอมืดกลางจอ แสดงตอนรอเซิร์ฟเวอร์ตอบ กันกดซ้ำและให้เห็นชัดว่าระบบกำลังทำงาน -->
+<div class="busy" id="busy" role="status" aria-live="polite" hidden>
+  <div class="busy-ring"></div>
+  <p class="busy-msg" id="busyMsg">กำลังบันทึก</p>
+  <p class="busy-sub">กรุณารอสักครู่ อย่าปิดหน้านี้</p>
+</div>
+
 <div class="dbg" id="dbg" hidden></div>
 <div class="toast" id="toast"></div>
 <script>
@@ -782,6 +807,21 @@ const store = {
   get(k,d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
   set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
 };
+
+/* ==================================================================================
+   หน้าจอมืดกลางจอ — เปิดก่อนยิง API ปิดเมื่อได้คำตอบ
+   นับซ้อนได้ เผื่อมีหลายงานซ้อนกัน จะปิดก็ต่อเมื่อทุกงานเสร็จ
+   ================================================================================== */
+let busyN = 0;
+function busyOn(msg) {
+  busyN++;
+  $('#busyMsg').textContent = msg || 'กำลังบันทึก';
+  $('#busy').hidden = false;
+}
+function busyOff() {
+  busyN = Math.max(0, busyN - 1);
+  if (!busyN) $('#busy').hidden = true;
+}
 
 /* ==================================================================================
    เรียก API — GET อ่าน, POST เขียนโดยส่ง text/plain เพื่อไม่ให้เกิด preflight
@@ -1077,13 +1117,6 @@ function validDate(v) {
   const dt = new Date(y, m-1, d);
   if (dt.getFullYear() !== y || dt.getMonth() !== m-1 || dt.getDate() !== d) return null;
   return {y, m, d, iso: v.substring(0,4) + '-' + v.substring(4,6) + '-' + v.substring(6,8)};
-}
-
-function regError(msg) {
-  const e = $('#loginErr');
-  if (!e) return;
-  if (!msg) { e.className = 'err hide'; e.textContent = ''; return; }
-  e.className = 'err'; e.textContent = msg;
 }
 
 function checkReg() {
@@ -1686,7 +1719,6 @@ function drawSum() {
   S.sumView === 'w' ? drawWeek() : drawMonth();
 }
 
-/** รายวันของเดือนที่กำลังดู เรียงจากใหม่ไปเก่า พร้อมบอกว่าวันนั้นทำกิจกรรมอะไร */
 /**
  * แปลงรหัสกิจกรรมเป็นข้อความที่อ่านแล้วเป็นประโยค
  * กีฬาที่เป็นคำนามล้วนเติม "เล่น" นำหน้า ส่วนชื่อที่เป็นกริยาอยู่แล้วอย่าง วิ่ง โยคะ ทำสวน ปล่อยไว้
@@ -1706,6 +1738,7 @@ function actNames(codes) {
   return String(codes).split(',').map(actLabel).filter(Boolean).join(' · ');
 }
 
+/** รายวันของเดือนที่กำลังดู เรียงจากใหม่ไปเก่า พร้อมบอกว่าวันนั้นทำกิจกรรมอะไร */
 function drawHistList() {
   const el = $('#histList');
   if (!el) return;
@@ -1756,7 +1789,6 @@ function drawRwPage() {
   const sum = $('#rwSummary'), list = $('#rwList');
   if (!sum || !list) return;
 
-  const pending = S.redeemed.filter(x => x.st === 'PENDING').length;
   sum.innerHTML = `
     <div class="stats" style="margin-top:14px">
       <div class="stat"><b>${S.points.balance}</b><span>แต้มคงเหลือ</span></div>
@@ -1840,8 +1872,8 @@ function drawBr() {
     s.innerHTML = `<div class="br"><div class="br-run">
       <div class="stage">
         <svg viewBox="0 0 216 216" aria-hidden="true">
-          <circle cx="108" cy="108" r="88" fill="none" stroke="var(--line)" stroke-width="1"/>
-          <circle cx="108" cy="108" r="66" fill="var(--wash-2)" opacity=".55"/>
+          <circle cx="108" cy="108" r="88" fill="none" stroke="var(--br-ring)" stroke-width="1.5"/>
+          <circle cx="108" cy="108" r="66" fill="var(--br-core)" opacity=".7"/>
         </svg>
         <div class="br-txt">
           <span style="font-family:'Barlow';font-weight:600;font-size:11px;letter-spacing:.2em;color:var(--blue)">เริ่มใน</span>
@@ -1857,9 +1889,9 @@ function drawBr() {
     s.innerHTML = `<div class="br"><div class="br-run">
       <div class="stage">
         <svg viewBox="0 0 216 216" aria-hidden="true">
-          <circle cx="108" cy="108" r="88" fill="none" stroke="var(--line)" stroke-width="1"/>
-          <circle id="brCore" cx="108" cy="108" r="66" fill="var(--wash-2)"/>
-          <circle id="brDot" cx="108" cy="20" r="7" fill="var(--navy)"/>
+          <circle cx="108" cy="108" r="88" fill="none" stroke="var(--br-ring)" stroke-width="1.5"/>
+          <circle id="brCore" cx="108" cy="108" r="66" fill="var(--br-core)"/>
+          <circle id="brDot" cx="108" cy="20" r="7" fill="var(--br-dot)"/>
         </svg>
         <div class="br-txt"><b id="brPhase">หายใจเข้า</b><span id="brLeft">30</span></div>
       </div>
@@ -2017,7 +2049,6 @@ document.addEventListener('click', async e => {
     return;
   }
 
-  /* ---- วันพัก ---- */
   /* ---- วันพัก: ถามยืนยันก่อนเสมอ เพราะเลือกแล้วเปลี่ยนใจไม่ได้ ---- */
   if (t.id === 'restGo') {
     const d = new Date();
@@ -2030,11 +2061,7 @@ document.addEventListener('click', async e => {
   if (t.id === 'restNo') { $('#restVeil').classList.remove('on'); return; }
   if (t.id === 'restYes') {
     $('#restVeil').classList.remove('on');
-    const chip = $('#restGo');
-    if (chip) {
-      chip.disabled = true;
-      chip.innerHTML = '<span class="mini-spin" style="border-color:rgba(18,58,120,.25);border-top-color:var(--navy)"></span> กำลังบันทึก';
-    }
+    busyOn('กำลังบันทึกวันพัก');
     try {
       const d = await api('entry', {act:'REST', min:0, idem: uuid()}, 'POST');
       if (!d.ok) { toast(d.message || d.code, true); drawInput(); return; }
@@ -2052,6 +2079,8 @@ document.addEventListener('click', async e => {
     } catch (err) {
       toast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง', true);
       drawInput();
+    } finally {
+      busyOff();
     }
     return;
   }
@@ -2071,8 +2100,10 @@ document.addEventListener('click', async e => {
   }
   if (t.id === 'cfNo') { $('#okVeil').classList.remove('on'); return; }
   if (t.id === 'cfYes') {
+    if (S.busy) return;
     $('#okVeil').classList.remove('on');
     S.busy = true; drawBar();
+    busyOn('กำลังบันทึกกิจกรรม');
     try {
       const d = await api('entry', {act: S.pick, min: S.min, idem: S.idem}, 'POST');
       if (!d.ok) { toast(d.message || d.code, true); return; }
@@ -2090,10 +2121,18 @@ document.addEventListener('click', async e => {
       toast(d.gained ? 'บันทึกแล้ว ได้ 1 แต้ม'
                      : (S.todayPoint ? 'บันทึกเพิ่มแล้ว แต้มเท่าเดิม'
                                      : 'บันทึกแล้ว ยังไม่ถึง ' + S.cfg.pointMin + ' นาที'));
+      /* ได้แต้มแล้วเลื่อนลงให้เห็นกล่องพักหายใจพื้นครีมทันที ผู้ใช้จะได้รู้ว่ายังมีขั้นต่อไป */
+      if (d.gained) {
+        setTimeout(() => {
+          const br = $('#brSlot');
+          if (br && br.firstElementChild) br.scrollIntoView({behavior: REDUCED ? 'auto' : 'smooth', block:'center'});
+        }, 120);
+      }
     } catch (err) {
       toast('บันทึกไม่สำเร็จ ตรวจสัญญาณแล้วลองใหม่', true);
     } finally {
       S.busy = false; drawBar();
+      busyOff();
     }
     return;
   }
@@ -2111,20 +2150,10 @@ document.addEventListener('click', async e => {
   if (t.id === 'rdYes') {
     const rid = S.rdPick;
     $('#rdVeil').classList.remove('on');
-    const card = document.querySelector('.hs-go[data-r="' + rid + '"]');
-    let old = '';
-    if (card) {
-      old = card.innerHTML;
-      card.disabled = true;
-      card.innerHTML = '<span class="mini-spin"></span> กำลังแลก...';
-    }
+    busyOn('กำลังแลกของรางวัล');
     try {
       const d = await api('redeem', {reward: rid}, 'POST');
-      if (!d.ok) {
-        toast(d.message || d.code, true);
-        if (card) { card.innerHTML = old; card.disabled = false; }
-        return;
-      }
+      if (!d.ok) { toast(d.message || d.code, true); return; }
       S.points = d.points || S.points;
       S.redeemed = d.redeemed || S.redeemed;
       S.rewards = d.rewards || S.rewards;
@@ -2132,8 +2161,10 @@ document.addEventListener('click', async e => {
       toast(`แลกสำเร็จ มารับได้ถึง ${thDate(d.expireAt)}`);
     } catch (err) {
       toast('แลกไม่สำเร็จ ลองใหม่อีกครั้ง', true);
-      if (card) { card.innerHTML = old; card.disabled = false; }
-    } finally { S.rdPick = null; }
+    } finally {
+      S.rdPick = null;
+      busyOff();
+    }
     return;
   }
 });
