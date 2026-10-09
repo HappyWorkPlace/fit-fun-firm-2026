@@ -1289,7 +1289,6 @@ function drawHero() {
   const list = S.rewards.slice().sort((a,b) => a.cost - b.cost);
   const n = list.length || 1;
   const b = S.points.balance;
-  const maxP = S.cfg.maxPoints || 100;
 
   let idx = -1;
   list.forEach((r,i) => { if (b >= r.cost) idx = i; });
@@ -1304,7 +1303,7 @@ function drawHero() {
   el.innerHTML = `
     <div class="hero">
       <div class="hero-k">แต้มสะสม</div>
-      <div class="hero-n">${b} <em>/ ${maxP} แต้ม</em></div>
+      <div class="hero-n">${b} <em>แต้ม</em></div>
       <div class="hero-sub">${nx ? 'อีก ' + (nx.cost - b) + ' แต้มก็แลก' + nx.n + 'ได้' : 'แต้มพอแลกได้ทุกรายการแล้ว'}</div>
 
       <div class="htrack" id="htrack">
@@ -1573,7 +1572,7 @@ function drawToday() {
     ? S.today.map(e => `<div class="item">
         <div class="item-b"><b>${e.n || A(e.a).n}</b><span>บันทึกเมื่อ ${e.t} น.</span></div>
         <div class="item-n">${e.a === 'REST' ? '<em>พัก</em>' : e.m + '<em> นาที</em>'}</div></div>`).join('') + flash
-    : `<div class="empty"><b>วันนี้ยังไม่มีรายการ</b>บันทึกได้วันละไม่เกิน ${S.cfg.maxEntries} ครั้ง รวมกันถึง ${S.cfg.pointMin} นาทีรับ 1 แต้ม ทำได้เฉพาะวันนี้ ย้อนหลังไม่ได้</div>`;
+    : `<div class="empty"><b>วันนี้ยังไม่มีรายการ</b>บันทึกได้วันละ ${S.cfg.maxEntries} ครั้ง รวมกัน ${S.cfg.pointMin} นาที ได้สูงสุด 1 แต้มต่อวัน</div>`;
 }
 
 function drawCut() {
