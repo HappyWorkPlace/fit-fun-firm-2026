@@ -909,12 +909,24 @@ function defaultFav() {
     if (exact) return exact.c;
     const hit = search(n, 1)[0];
     return hit ? hit.a.c : null;
-  }).filter(Boolean);
+  }).filter(Boolean)
+    .filter((c, i, arr) => arr.indexOf(c) === i);   // ตัดรหัสซ้ำ
 }
 async function enterApp(d) {
   applyBoot(d);
   await ensureActivity(d.activityVersion);
+
+  /* เปลี่ยนชุดค่าเริ่มต้นเมื่อไหร่ ให้เพิ่มเลขนี้ ทุกเครื่องจะรีเซ็ตเป็นชุดใหม่เองครั้งเดียว */
+  const FAV_VER = '2';
+  if (store.get('favVer', '') !== FAV_VER) {
+    const def = defaultFav();
+    if (def.length) {               // กันกรณีรายการกิจกรรมยังโหลดไม่ขึ้น จะได้ไม่บันทึกค่าว่างทับ
+      store.set('fav', def);
+      store.set('favVer', FAV_VER);
+    }
+  }
   S.fav = store.get('fav', defaultFav());
+
   drawTabbar();
   render();
   showPage('shell');
