@@ -901,11 +901,20 @@ async function boot() {
     showError('เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ', String(e.message || e));
   }
 }
+const DEFAULT_FAV = ['เดินลู่วิ่งไฟฟ้า','แบดมินตัน','เดินเร็ว','ยกน้ำหนัก','วิ่ง','ปั่นจักรยาน'];
 
+function defaultFav() {
+  return DEFAULT_FAV.map(n => {
+    const exact = S.act.find(a => a.n === n);
+    if (exact) return exact.c;
+    const hit = search(n, 1)[0];
+    return hit ? hit.a.c : null;
+  }).filter(Boolean);
+}
 async function enterApp(d) {
   applyBoot(d);
   await ensureActivity(d.activityVersion);
-  S.fav = store.get('fav', ['A05','B01','A01','D01','A06','F01','H04']);
+  S.fav = store.get('fav', defaultFav());
   drawTabbar();
   render();
   showPage('shell');
