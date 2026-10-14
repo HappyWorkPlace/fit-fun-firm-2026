@@ -905,7 +905,7 @@ async function boot() {
 async function enterApp(d) {
   applyBoot(d);
   await ensureActivity(d.activityVersion);
-  S.fav = store.get('fav', ['B01','A01','D01','A06','F01','H04']);
+  S.fav = store.get('fav', ['A05','B01','A01','D01','A06','F01','H04']);
   drawTabbar();
   render();
   showPage('shell');
