@@ -901,31 +901,37 @@ async function boot() {
     showError('เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ', String(e.message || e));
   }
 }
-const DEFAULT_FAV = ['เดินลู่วิ่งไฟฟ้า','แบดมินตัน','เดินเร็ว','ยกน้ำหนัก','วิ่ง','ปั่นจักรยาน'];
+/* แถว "ใช้บ่อย" ค่าเริ่มต้น เรียงตามลำดับที่จะแสดง
+   ใส่เป็นรหัสจากคอลัมน์ Code ในชีท Activity (แนะนำ) หรือใส่ชื่อตามคอลัมน์ NameTH ก็ได้
+   ตัวที่หาไม่เจอในชีทจะถูกข้ามไปเอง ไม่ขึ้นเป็นปุ่มเสีย */
+const DEFAULT_FAV = [
+  'A05',          // เดินลู่วิ่งไฟฟ้า
+  'แบดมินตัน',     // TODO: เปลี่ยนเป็นรหัสจากชีท
+  'A01',          // เดินเร็ว
+  'ยกน้ำหนัก',     // TODO: เปลี่ยนเป็นรหัสจากชีท
+  'A03',          // วิ่ง
+  'A06'           // ปั่นจักรยาน
+];
 
 function defaultFav() {
-  return DEFAULT_FAV.map(n => {
-    const exact = S.act.find(a => a.n === n);
-    if (exact) return exact.c;
-    const hit = search(n, 1)[0];
-    return hit ? hit.a.c : null;
+  return DEFAULT_FAV.map(k => {
+    const byCode = S.act.find(a => a.c === k);
+    if (byCode) return byCode.c;
+    const byName = S.act.find(a => a.n === k);
+    return byName ? byName.c : null;
   }).filter(Boolean)
     .filter((c, i, arr) => arr.indexOf(c) === i);   // ตัดรหัสซ้ำ
 }
+
 async function enterApp(d) {
   applyBoot(d);
   await ensureActivity(d.activityVersion);
 
-  /* เปลี่ยนชุดค่าเริ่มต้นเมื่อไหร่ ให้เพิ่มเลขนี้ ทุกเครื่องจะรีเซ็ตเป็นชุดใหม่เองครั้งเดียว */
-  const FAV_VER = '2';
-  if (store.get('favVer', '') !== FAV_VER) {
-    const def = defaultFav();
-    if (def.length) {               // กันกรณีรายการกิจกรรมยังโหลดไม่ขึ้น จะได้ไม่บันทึกค่าว่างทับ
-      store.set('fav', def);
-      store.set('favVer', FAV_VER);
-    }
-  }
-  S.fav = store.get('fav', defaultFav());
+  // ใช้รายการโปรดที่ผู้ใช้ตั้งเอง ถ้ายังไม่เคยตั้ง (หรือถูกล้างด้วย APP_VER) ใช้ค่าเริ่มต้น
+  // กรองรหัสที่ไม่มีในชีทแล้วออก เช่นกิจกรรมที่ถูกปิด Active
+  const saved = store.get('fav', null);
+  S.fav = (saved && saved.length ? saved : defaultFav())
+            .filter(c => S.act.some(a => a.c === c));
 
   drawTabbar();
   render();
