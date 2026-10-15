@@ -512,6 +512,9 @@ h1 .nm{font-size:18px;font-style:normal;letter-spacing:.04em;display:block;margi
   /* วงหมุนรอเซิร์ฟเวอร์ต้องหมุนต่อ เพราะเป็นสัญญาณว่าระบบกำลังทำงาน ไม่ใช่การตกแต่ง */
   .busy-ring{animation:sp 1.2s linear infinite!important}
 }
+body.typing .tabbar,
+body.typing .bar-fix{display:none!important}
+body.typing .wrap{padding-bottom:70vh}
 </style>
 </head>
 <body>
@@ -2214,6 +2217,35 @@ if (window.ResizeObserver) {
   ['#tabbar','#barFix'].forEach(s => { const el = $(s); if (el) ro.observe(el); });
 }
 boot();
+  function pinSearch() {
+  const q = $('#q');
+  if (!q) return;
+  window.scrollTo({top: q.getBoundingClientRect().top + window.scrollY - 12});
+}
+
+document.addEventListener('focusin', e => {
+  if (e.target.id !== 'q') return;
+  document.body.classList.add('typing');
+  setTimeout(pinSearch, 50);     // เลื่อนทันที
+  setTimeout(pinSearch, 400);    // เลื่อนซ้ำหลังคีย์บอร์ดเด้งเสร็จ บางเครื่องดันจอเอง
+});
+
+document.addEventListener('focusout', e => {
+  if (e.target.id !== 'q') return;
+  // หน่วงไว้ก่อน ไม่งั้นแถบล่างจะโผล่กลับมาก่อนที่การแตะผลค้นหาจะทำงาน แล้วกดพลาด
+  setTimeout(() => {
+    if (document.activeElement && document.activeElement.id === 'q') return;
+    document.body.classList.remove('typing');
+    fitBottom();
+  }, 250);
+});
+
+// คีย์บอร์ดเปลี่ยนความสูง (สลับภาษา เปิดแถบคำแนะนำ) ให้ตามเลื่อนช่องค้นหาใหม่
+if (window.visualViewport) {
+  visualViewport.addEventListener('resize', () => {
+    if (document.body.classList.contains('typing')) pinSearch();
+  });
+}
 </script>
 </body>
 </html>
