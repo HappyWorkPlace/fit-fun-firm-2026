@@ -807,7 +807,16 @@ const store = {
   get(k,d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
   set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
 };
-
+/* เซิร์ฟเวอร์สั่งล้างค่าในเครื่องผ่าน RESET_VER ในชีท Config ผู้ใช้ไม่เห็นอะไร */
+function resetLocal(v) {
+  if (!v) return;
+  try {
+    if (localStorage.getItem('resetVer') !== String(v)) {
+      ['fav','favVer','act','actVer'].forEach(k => localStorage.removeItem(k));
+      localStorage.setItem('resetVer', String(v));
+    }
+  } catch (e) {}
+}
 /* ==================================================================================
    หน้าจอมืดกลางจอ — เปิดก่อนยิง API ปิดเมื่อได้คำตอบ
    นับซ้อนได้ เผื่อมีหลายงานซ้อนกัน จะปิดก็ต่อเมื่อทุกงานเสร็จ
@@ -892,6 +901,7 @@ async function boot() {
       return showError('เข้าสู่ระบบไม่สำเร็จ', d.message || d.code);
     }
     S.cfg = d.config || S.cfg;
+    resetLocal(S.cfg.resetVer);
     S.todayKey = d.today;
     if (!d.registered) { store.set('reg', false); showPage('regPage'); initRegister(); return; }
     store.set('reg', true);
