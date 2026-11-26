@@ -1858,7 +1858,7 @@ function drawRwPage() {
       <div class="b"><b>${x.n || rw.n || x.id}</b>
         <span>แลกเมื่อ ${thDate(x.at)}</span><br>
         <span class="chip ${st.c}">${st.t}</span></div>
-      <div class="c">−${rw.cost || ''}</div>
+      <div class="c">−${x.c != null ? x.c : (rw.cost || '')}</div>
     </div>`;
   }).join('');
 }
